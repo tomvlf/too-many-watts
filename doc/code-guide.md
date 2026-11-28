@@ -5,7 +5,9 @@ experience. You do not need to understand every line to follow what happens.
 Start with one action, such as saving a ride, and follow the few files involved.
 
 For using the app, start with the [README](../README.md). For protecting your
-data, read [storage and backups](backend.md).
+data, read [storage and backups](backend.md). Coding agents should start with
+[AGENTS.md](../AGENTS.md), then follow only the route, test and instructions
+links relevant to the task.
 
 ## The big picture
 

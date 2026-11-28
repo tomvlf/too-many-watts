@@ -231,6 +231,7 @@ equivalent headers themselves, and offline loading is best-effort rather than a 
 | Know where data lives, back it up, or host it | [Deployment, storage and migration](doc/backend.md) |
 | Connect Intervals.icu | [Intervals.icu guide](doc/intervals-guide.md) |
 | Understand planning, feedback and its limits | [Coach guide](doc/coaching.md) |
+| Work in this repository with an AI coding agent | [Agent repository guide](AGENTS.md) |
 
 ## Credits and license
 
