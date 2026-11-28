@@ -1820,7 +1820,7 @@ body.platform-app[data-route="player"] #ride-unsaved h3 { color: #b43a12; }
         display: flex;
         flex-direction: column;
         min-height: 100dvh;
-        padding: max(10px, env(safe-area-inset-top)) 14px calc(10px + env(safe-area-inset-bottom));
+        padding: max(10px, env(safe-area-inset-top)) 14px calc(86px + env(safe-area-inset-bottom));
     }
     body.mobile-app[data-route="player"] .ride-topbar {
         gap: 8px;
@@ -1841,13 +1841,17 @@ body.platform-app[data-route="player"] #ride-unsaved h3 { color: #b43a12; }
         min-width: 0;
     }
     /* Ride-first order: live numbers on top, the profile fills the remaining height. */
-    body.mobile-app[data-route="player"] .ride-metrics { order: 1; }
+    body.mobile-app[data-route="player"] .ride-metrics {
+        order: 1;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
     body.mobile-app[data-route="player"] .ride-summary { order: 2; }
     body.mobile-app[data-route="player"] .ride-profile-wrap {
         order: 3;
         flex: 1;
         align-content: center;
     }
+    body.mobile-app[data-route="player"] .ride-profile-plot { height: 92px; }
     body.mobile-app[data-route="player"] .ride-live-value strong { font-size: clamp(46px, 13vw, 68px); }
     body.mobile-app[data-route="player"] .ride-metric.countdown strong { font-size: clamp(28px, 8vw, 44px); }
     body.mobile-app[data-route="player"] #ride-cadence-prescription strong { font-size: clamp(26px, 7vw, 36px); }
