@@ -37,7 +37,6 @@ const icons = {
     library: icon(`<path d="M9 6.5h11M9 12h11M9 17.5h11"/>${dot(4.5, 6.5)}${dot(4.5, 12)}${dot(4.5, 17.5)}`),
     activities: icon('<path d="M3 12h4l2.5-6 5 12 2.5-6H21"/>'),
     progress: icon('<path d="M6 19v-6M12 19V6M18 19v-9"/>'),
-    devices: icon('<path d="M7 7.5 17 16.5l-5 4.5v-18l5 4.5L7 16.5"/>'),
     settings: icon('<path d="M4 7h9M17 7h3M4 17h3M11 17h9"/><circle cx="15" cy="7" r="2"/><circle cx="9" cy="17" r="2"/>'),
 };
 const devices = {
@@ -289,25 +288,35 @@ export async function launchPlatform(root) {
             <span class="device-connect--name"><i class="device-connect--dot" aria-hidden="true"></i>${name}</span>
             <span data-sensor="${id}">${sensorStatus[id] || 'Not connected'}</span>
         </button>`)}</div>`;
-    const devicesView = () => html`<section class="devices-overview">
-        <div><p class="eyebrow">Connection console</p>
-            <h2>Connect the equipment that powers your ride.</h2>
-            <p>Select a trainer or sensor. After it connects, choose which measurements it should supply in the device rows below.</p></div>
-        <div class="devices-overview--status"><strong>${Object.values(sensorStatus).filter(status => status === 'Connected').length}</strong>
-            <span>devices connected</span></div>
-    </section>
-    <section class="devices-connect-panel" aria-labelledby="devices-connect-title">
-        <div><h2 id="devices-connect-title">Quick connect</h2>
-            <p class="muted">Tap a device to open its browser pairing prompt.</p></div>
-        ${deviceButtons()}
-    </section>
-    ${!navigator.bluetooth ? html`<p class="devices-browser-warning" role="alert">
-        <strong>Web Bluetooth is unavailable.</strong>
-        Use Chrome or Edge on a supported device and open Athlima over HTTPS or localhost. ANT+ requires Web Serial or WebUSB.
-    </p>` : ''}
-    <div class="devices-source-heading"><div><p class="eyebrow">Measurement sources</p>
-        <h2>Choose the data you trust.</h2></div>
-        <p class="muted">Select one source per metric. A connected device can stay paired without supplying every reading.</p></div>`;
+    /**
+     * One device as a settings row: name and connection state on the left, the pairing control on
+     * the right. The button keeps `data-device`/`data-state`, so the existing BLE handlers and
+     * status updates keep working without a second event path.
+     */
+    const deviceRow = (id, name) => {
+        const state = deviceState(id);
+        const status = sensorStatus[id] || 'Not connected';
+        return settingsRow(name, state === 'connected' ? `${status}. Choose its measurement source in the ride settings.`
+            : state === 'connecting' ? `${status}. Finish pairing in the browser prompt.`
+                : 'Not connected. Pair it here, then choose which measurements it supplies.',
+        html`<button type="button" class="secondary device-connect" data-device="${id}" data-state="${state}">
+            <span class="device-connect--name"><i class="device-connect--dot" aria-hidden="true"></i>${state === 'connected' ? 'Connected' : state === 'connecting' ? 'Connecting' : 'Connect'}</span>
+            <span data-sensor="${id}">${status}</span>
+        </button>`, {className: 'settings-row--device'});
+    };
+    const devicesGroup = () => {
+        const connected = Object.values(sensorStatus).filter(status => status === 'Connected').length;
+        return html`
+            <p class="settings-lede">Pair the trainer and sensors that power your ride. Connections use Bluetooth from this browser; nothing is sent to a server.</p>
+            ${!navigator.bluetooth ? html`<p class="settings-callout" role="alert"><strong>Web Bluetooth is unavailable.</strong>
+                Use Chrome or Edge on a supported device and open Athlima over HTTPS or localhost. ANT+ requires Web Serial or WebUSB.</p>` : ''}
+            <div class="settings-facts">
+                <div><span>Connected</span><strong>${connected} of ${Object.keys(devices).length}</strong></div>
+                <div><span>Bluetooth</span><strong>${navigator.bluetooth ? 'Available' : 'Unavailable'}</strong></div>
+            </div>
+            ${Object.entries(devices).map(([id, name]) => deviceRow(id, name))}
+            <p class="settings-note">A connected device can stay paired without supplying every reading. Choose one source per measurement in the ride screen's device settings.</p>`;
+    };
     const workoutRow = workout => html`<li class="session-row"><div><span class="eyebrow">${workout.date} / ${workout.family}</span>
         <strong>${workout.title}</strong><span>${minutes(workout.duration)} · ${workout.status}</span></div>
         ${link(`workout/${encodeURIComponent(workout.id)}`, 'View session', 'button secondary')}</li>`;
@@ -601,7 +610,7 @@ export async function launchPlatform(root) {
                 </div>
                 <dl class="workout-detail--metrics">${metrics.map(([label, value]) =>
                     html`<div><dt>${label}</dt><dd>${value}</dd></div>`)}</dl>
-                <div class="workout-detail--actions">${action}${run ? '' : link('devices', 'Connect devices', 'button secondary')}</div>
+                <div class="workout-detail--actions">${action}${run ? '' : link('settings', 'Connect devices', 'button secondary')}</div>
             </header>
             <section class="workout-detail--profile" aria-labelledby="workout-detail-profile-title">
                 <div class="workout-detail--section-head"><div><p class="eyebrow">Session shape</p>
@@ -738,10 +747,12 @@ export async function launchPlatform(root) {
         integration: '<path d="M10.6 13.4a4.6 4.6 0 0 0 6.5 0l2.1-2.1a4.6 4.6 0 0 0-6.5-6.5l-1.1 1.1"/><path d="M13.4 10.6a4.6 4.6 0 0 0-6.5 0l-2.1 2.1a4.6 4.6 0 0 0 6.5 6.5l1.1-1.1"/>',
         backup: '<path d="M12 3.5v11"/><path d="m7.5 10 4.5 4.5 4.5-4.5"/><path d="M4.5 16.5v2.2a1.8 1.8 0 0 0 1.8 1.8h11.4a1.8 1.8 0 0 0 1.8-1.8v-2.2"/>',
         storage: '<rect x="3.6" y="4.5" width="16.8" height="6.5" rx="2"/><rect x="3.6" y="14" width="16.8" height="5.5" rx="2"/><path d="M7 7.8h.01M7 16.8h.01"/>',
+        devices: '<path d="M12 18.5v.01"/><rect x="6.5" y="2.5" width="11" height="19" rx="2.5"/><path d="M10 5.5h4"/>',
         danger: '<path d="M4.5 7h15"/><path d="M9.5 7V5.6a1.6 1.6 0 0 1 1.6-1.6h1.8a1.6 1.6 0 0 1 1.6 1.6V7"/><path d="M6.6 7l.7 11.9a2 2 0 0 0 2 1.9h5.4a2 2 0 0 0 2-1.9L17.4 7"/>',
     };
     const settingsSections = [
         ['settings-rider', 'Rider', 'rider'],
+        ['settings-devices', 'Devices', 'devices'],
         ['settings-intervals', 'Intervals.icu', 'integration'],
         ['settings-backup', 'Backup', 'backup'],
         ['settings-storage', 'Storage', 'storage'],
@@ -824,6 +835,7 @@ export async function launchPlatform(root) {
                         <div class="settings-row--control"><button type="button" class="secondary" data-action="import-profile">Refresh Intervals.icu profile</button></div>
                     </div>` : ''}
                 </form>`)}
+            ${settingsGroup('settings-devices', 'Devices', 'devices', devicesGroup())}
             ${settingsGroup('settings-intervals', 'Intervals.icu', 'integration', integrationView())}
             ${settingsGroup('settings-backup', 'Local backup', 'backup', html`
                 <p class="settings-lede">Your coaching history, plans, workout files, recent FIT recordings, settings and calendar in one file. Keep one before clearing browser data or changing devices.</p>
@@ -982,14 +994,13 @@ export async function launchPlatform(root) {
         root.querySelector('#route-subtitle').textContent = subtitle;
         markNavigation();
         document.body.dataset.route = route;
-        legacy.hidden = !['calendar', 'coach', 'devices', 'editor'].includes(route);
+        legacy.hidden = !['calendar', 'coach', 'editor'].includes(route);
         setHTML(content, route === 'dashboard' ? dashboard(data) : route === 'library' ? renderLibrary(db.workouts, libraryFilters,
             {page: libraryPage, pageSize: mobile ? 6 : Infinity})
             : route === 'workout' ? details(data) : route === 'plan' ? plan(data)
                 : route === 'activities' ? activities(data) : route === 'progress' ? progress(data)
                     : route === 'player' ? player() : route === 'settings' ? settings()
-                        : route === 'devices' ? devicesView()
-                            : route === 'coach' ? html`<p class="muted">Your on-device Coach plans around your goal, schedule and ride history.</p>` : html``);
+                        : route === 'coach' ? html`<p class="muted">Your on-device Coach plans around your goal, schedule and ride history.</p>` : html``);
         updateMobileSections();
         if(route === 'settings') void refreshStorageStatus();
         if(route === 'player') updateRide();
@@ -1634,10 +1645,10 @@ export async function launchPlatform(root) {
                     element.dataset.state = deviceState(id);
                 });
                 root.querySelectorAll(`[data-sensor="${id}"]`).forEach(element => { element.textContent = label; });
-                if(route === 'devices') {
-                    const count = root.querySelector('.devices-overview--status strong');
-                    if(count) count.textContent = Object.values(sensorStatus)
-                        .filter(status => status === 'Connected').length;
+                if(route === 'settings') {
+                    const count = root.querySelector('#settings-devices .settings-facts strong');
+                    if(count) count.textContent = `${Object.values(sensorStatus)
+                        .filter(status => status === 'Connected').length} of ${Object.keys(devices).length}`;
                 }
                 if(label === 'Disconnected' && db?.watchStatus === 'started') {
                     report(`${devices[id]} disconnected. Reconnect the device; workout recording is still active.`, true);

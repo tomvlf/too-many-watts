@@ -23,4 +23,10 @@ test('keeps the platform route and mobile navigation catalog together', () => {
     expect(routes.player).toEqual(['Ride', 'One interval at a time']);
     expect(mobileTabs.map(([route]) => route)).toEqual(['dashboard', 'calendar', 'player', 'coach']);
     expect(moreRoutes).toContain('settings');
+    expect(moreRoutes).not.toContain('devices');
+});
+
+test('sends the retired devices route to settings', () => {
+    expect(parsePlatformRoute('#/devices')).toEqual({route: 'settings', selectedId: ''});
+    expect(routes.devices).toBeUndefined();
 });

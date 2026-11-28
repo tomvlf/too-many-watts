@@ -129,7 +129,8 @@ test('desktop shell wires every screen to real data, workout commands, accessibl
     await go('coach');
     expect(root.textContent).toContain('on-device Coach');
     await go('devices');
-    expect(root.textContent).toContain('Connect the equipment that powers your ride');
+    expect(document.body.dataset.route).toBe('settings');
+    expect(root.textContent).toContain('Pair the trainer and sensors that power your ride');
     expect(root.querySelectorAll('[data-device]')).toHaveLength(4);
     await go('editor');
     expect(document.body.dataset.route).toBe('editor');

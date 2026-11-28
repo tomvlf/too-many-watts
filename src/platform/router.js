@@ -12,8 +12,7 @@ export const routes = Object.freeze({
     player: ['Ride', 'One interval at a time'],
     activities: ['Activities', 'Every ride is part of the story'],
     progress: ['Progress', 'Consistency, made visible'],
-    devices: ['Devices', 'Connected and ready to ride'],
-    settings: ['Settings', 'Your profile and integrations'],
+    settings: ['Settings', 'Your profile, devices and integrations'],
 });
 
 export const mobileTabs = Object.freeze([
@@ -24,8 +23,13 @@ export const mobileTabs = Object.freeze([
 ]);
 
 export const moreRoutes = Object.freeze([
-    'plan', 'library', 'activities', 'progress', 'devices', 'settings',
+    'plan', 'library', 'activities', 'progress', 'settings',
 ]);
+
+/** Retired routes that now live inside another page. */
+export const routeAliases = Object.freeze({
+    devices: 'settings',
+});
 
 export const openOnMobile = new Set(['Up next', 'workout-notes', 'calendar-month']);
 
@@ -35,7 +39,8 @@ export function parsePlatformRoute(hash) {
     try { selectedId = decodeURIComponent(id || ''); }
     catch { selectedId = ''; }
     return {
-        route: Object.hasOwn(routes, name) || name === 'editor' ? name : 'dashboard',
+        route: Object.hasOwn(routes, name) || name === 'editor' || Object.hasOwn(routeAliases, name)
+            ? routeAliases[name] || name : 'dashboard',
         selectedId,
     };
 }

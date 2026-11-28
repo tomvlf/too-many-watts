@@ -68,7 +68,7 @@ test('mobile has a dedicated ride-first navigation, recovered ride controls, gla
     expect(tabLabels()).toEqual(['Today', 'Calendar', 'Ride', 'Coach', 'More']);
     expect(moreMenu().hidden).toBe(true);
     expect([...moreMenu().querySelectorAll('a')].map(a => a.getAttribute('href')))
-        .toEqual(['#/plan', '#/library', '#/activities', '#/progress', '#/devices', '#/settings']);
+        .toEqual(['#/plan', '#/library', '#/activities', '#/progress', '#/settings']);
     expect(document.body.dataset.route).toBe('player');
     expect(activeTab()).toBe('Ride');
     expect(root.querySelector('nav [aria-current="page"]').textContent.trim()).toBe('Ride');
@@ -129,10 +129,10 @@ test('mobile has a dedicated ride-first navigation, recovered ride controls, gla
     expect(root.textContent).toContain('200W');
     expect(activeTab()).toBe('More');
     root.querySelector('[data-tab="more"]').click();
-    moreMenu().querySelector('a[href="#/devices"]').click();
+    moreMenu().querySelector('a[href="#/settings"]').click();
     expect(moreMenu().hidden).toBe(true);
-    await waitFor(() => document.body.dataset.route === 'devices');
-    expect(document.body.dataset.route).toBe('devices');
+    await waitFor(() => document.body.dataset.route === 'settings');
+    expect(document.body.dataset.route).toBe('settings');
     expect(activeTab()).toBe('More');
     db.elapsed = 0;
 });
