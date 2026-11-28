@@ -1746,7 +1746,7 @@ body.platform-app[data-route="player"] .ride-actions {
     box-shadow: none;
     backdrop-filter: none;
 }
-body.platform-app[data-route="player"] .ride-actions button {
+body.platform-app[data-route="player"] #platform .ride-actions button {
     min-height: 38px;
     padding: 7px 14px;
     border-radius: 10px;
