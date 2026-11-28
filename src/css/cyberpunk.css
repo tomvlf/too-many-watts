@@ -2298,15 +2298,13 @@ body.platform-app[data-route="player"] #ride-unsaved h3 { color: #ffc0a6; }
 }
 
 /*
- * Settings page. One centred column: a sticky section bar jumps between groups, and each group is
- * a single surface whose rows carry a hairline, a label with its explanation, and the control on
- * the right. The values themselves are the loudest element on the page.
+ * Settings page. Full-width layout with a max-width constraint for readability,
+ * similar to other pages in the application.
  */
 body[data-route="settings"] .platform-header,
 body[data-route="settings"] .settings-page {
     width: 100%;
-    max-width: 780px;
-    margin-inline: auto;
+    max-width: 1280px;
 }
 
 body[data-route="settings"] .platform-header {
