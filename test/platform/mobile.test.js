@@ -76,7 +76,8 @@ test('mobile has a dedicated ride-first navigation, recovered ride controls, gla
     for(const id of ['power', 'target', 'cadence', 'hr', 'elapsed', 'countdown', 'next', 'remaining']) {
         expect(root.querySelector(`#ride-${id}`)).not.toBeNull();
     }
-    expect(root.querySelector('#ride-toggle').textContent).toBe('Resume');
+    expect(root.querySelector('#ride-toggle')).toBeNull();
+    expect(root.querySelector('#ride-status').textContent).toBe('Paused · pedal to resume');
     expect(powerSwitch.closest('[data-mobile-details]').open).toBe(false);
     const more = root.querySelector('[data-tab="more"]');
     more.click();
@@ -91,7 +92,7 @@ test('mobile has a dedicated ride-first navigation, recovered ride controls, gla
     moreMenu().click();
     expect(moreMenu().hidden).toBe(true);
     expect(document.activeElement).toBe(more);
-    const toggle = root.querySelector('#ride-toggle');
+    const finish = root.querySelector('[data-action="ride-finish"]');
     const hash = window.location.hash;
     xf.dispatch.mockClear();
     window.innerWidth = 701;
@@ -103,7 +104,7 @@ test('mobile has a dedicated ride-first navigation, recovered ride controls, gla
     expect(root.querySelector('.sidebar .app-versions').hidden).toBe(false);
     expect(powerSwitch.closest('[data-mobile-details]').open).toBe(true);
     expect(root.querySelector('#test-power-switch')).toBe(powerSwitch);
-    expect(root.querySelector('#ride-toggle')).toBe(toggle);
+    expect(root.querySelector('[data-action="ride-finish"]')).toBe(finish);
     expect(window.location.hash).toBe(hash);
     expect(db.watchStatus).toBe('paused');
     expect(xf.dispatch).not.toHaveBeenCalled();
@@ -114,7 +115,7 @@ test('mobile has a dedicated ride-first navigation, recovered ride controls, gla
     expect(activeTab()).toBe('Ride');
     expect(root.querySelector('.sidebar .app-versions').hidden).toBe(true);
     expect(powerSwitch.closest('[data-mobile-details]').open).toBe(false);
-    expect(root.querySelector('#ride-toggle')).toBe(toggle);
+    expect(root.querySelector('[data-action="ride-finish"]')).toBe(finish);
     expect(xf.dispatch).not.toHaveBeenCalled();
     const dispatch = xf.dispatch;
     dispatch.mockClear();

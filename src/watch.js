@@ -12,6 +12,7 @@ import { idb } from './storage/idb.js';
 import { ControlMode, } from './ble/enums.js';
 import { TimerStatus, EventType, } from './activity/enums.js';
 import { stopRide } from './activity/stop.js';
+import { evaluatePedalState } from './activity/pedal.js';
 import { trustedScriptURL } from './html.js';
 
 // const timer = new Worker('./timer.js');
@@ -144,48 +145,28 @@ class Watch {
         this.autoStart = value.autoStart ?? this.autoStart;
     }
     /**
-     * Use one-second power updates for the optional start countdown and pause/resume behavior.
-     * Consecutive zero readings can pause; resumed pedalling can resume a ride that was
-     * auto-paused.
+     * Use one-second power updates to start/resume immediately when pedaling begins and pause
+     * after five consecutive zero-power seconds.
      */
     onPower1s(power) {
-        if(this.autoPause) {
-            if(power === 0 && this.isStarted()) {
-                this.autoPauseCounter += 1;
-            } else {
-                this.autoPauseCounter = 0;
-            }
-
-            if(this.autoPauseCounter >= 4) {
-                this.autoPauseCounter = 0;
-                xf.dispatch(`ui:watchPause`);
-                this.hasBeenAutoPaused = true;
-            }
-
-            if(power > 40 && this.hasBeenAutoPaused) {
-                xf.dispatch(`ui:watchResume`);
-            }
-        }
-
-        if(this.autoStart && this.isStopped()) {
-            // check
-            if(this.autoStartCounter < 0) return;
-            if(this.autoStartCounter === 0) {
-                this.autoStartCounter = -1;
-                xf.dispatch(`ui:watchStart`);
-                xf.dispatch('ui:workoutStart');
-                xf.dispatch(`ui:autoStartCounter`, -1);
-                return;
-            }
-            // update
-            if(power === 0) {
-                this.autoStartCounter = 3;
-                xf.dispatch(`ui:autoStartCounter`, this.autoStartCounter);
-            }
-            if(power > 40) {
-                this.autoStartCounter -= 1;
-                xf.dispatch(`ui:autoStartCounter`, this.autoStartCounter);
-            }
+        const next = evaluatePedalState({
+            power,
+            watchStatus: this.state,
+            autoStart: this.autoStart,
+            autoPause: this.autoPause,
+            idleSeconds: this.autoPauseCounter,
+        });
+        this.autoPauseCounter = next.idleSeconds;
+        if(next.action === 'pause') {
+            xf.dispatch('ui:watchPause');
+            this.hasBeenAutoPaused = true;
+        } else if(next.action === 'resume') {
+            xf.dispatch('ui:watchResume');
+        } else if(next.action === 'start') {
+            this.autoStartCounter = -1;
+            xf.dispatch('ui:watchStart');
+            xf.dispatch('ui:workoutStart');
+            xf.dispatch('ui:autoStartCounter', -1);
         }
     }
     /**
@@ -282,11 +263,13 @@ class Watch {
             });
 
             this.hasBeenAutoPaused = false;
+            this.autoPauseCounter = 0;
         }
     }
     /** Stop ticks and record a stop event without finalizing or deleting the activity. */
     pause() {
         const self = this;
+        this.autoPauseCounter = 0;
         timer.postMessage('pause');
         xf.dispatch('watch:paused');
 
@@ -325,6 +308,9 @@ class Watch {
             }
             xf.dispatch('watch:elapsed', 0);
             xf.dispatch('watch:lapTime', 0);
+            this.autoPauseCounter = 0;
+            this.autoStartCounter = 3;
+            this.hasBeenAutoPaused = false;
         }
     }
     /**

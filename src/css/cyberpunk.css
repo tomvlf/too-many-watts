@@ -1520,13 +1520,85 @@ body.platform-app[data-route="player"] #platform .ride-panel .muted,
 body.platform-app[data-route="player"] #platform .ride-panel small {
     color: var(--ride-muted);
 }
-body.platform-app[data-route="player"] #platform .ride-panel .eyebrow { color: var(--ride-zone); }
-body.platform-app[data-route="player"] #platform .ride-panel a { color: var(--ride-zone); }
+body.platform-app[data-route="player"] #platform .ride-panel .eyebrow { color: color-mix(in srgb, var(--ride-zone) 55%, #ffffff); }
+body.platform-app[data-route="player"] #platform .ride-panel a { color: color-mix(in srgb, var(--ride-zone) 40%, #8cd9ff); }
 body.platform-app[data-route="player"] #platform .ride-panel label { color: var(--ride-muted); }
 body.platform-app[data-route="player"] .ride-heading {
     align-items: flex-start;
     margin-bottom: 18px;
 }
+/* Cockpit top bar: leave the ride, see the workout and status, open devices. */
+body.platform-app[data-route="player"] .ride-topbar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 18px;
+}
+body.platform-app[data-route="player"] #platform .ride-panel .ride-exit,
+body.platform-app[data-route="player"] #platform .ride-panel .ride-topbar--devices {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    gap: 6px;
+    min-height: 44px;
+    margin: 0;
+    padding: 0 14px;
+    border: 1px solid var(--ride-border-strong);
+    border-radius: 999px;
+    background: rgba(255, 255, 255, .08);
+    color: var(--ride-text);
+    font-size: 13px;
+    font-weight: 650;
+    text-decoration: none;
+}
+body.platform-app[data-route="player"] #platform .ride-panel .ride-exit:hover,
+body.platform-app[data-route="player"] #platform .ride-panel .ride-topbar--devices:hover {
+    border-color: color-mix(in srgb, var(--ride-zone) 55%, #ffffff);
+    background: color-mix(in srgb, var(--ride-zone) 18%, rgba(255, 255, 255, .08));
+    text-decoration: none;
+}
+body.platform-app[data-route="player"] .ride-topbar--devices[aria-expanded="true"] {
+    border-color: var(--ride-zone);
+    background: color-mix(in srgb, var(--ride-zone) 18%, transparent);
+}
+body.platform-app[data-route="player"] .ride-topbar--title {
+    display: grid;
+    flex: 1;
+    gap: 2px;
+    min-width: 0;
+}
+body.platform-app[data-route="player"] .ride-topbar--name {
+    overflow: hidden;
+    color: var(--ride-text);
+    font-size: clamp(18px, 2vw, 24px);
+    font-weight: 780;
+    letter-spacing: -.035em;
+    line-height: 1.15;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+body.platform-app[data-route="player"] .ride-topbar #ride-status {
+    justify-self: start;
+    padding: 2px 10px 2px 20px;
+    font-size: 11px;
+}
+body.platform-app[data-route="player"] .ride-devices {
+    margin-top: 14px;
+    padding: 14px 16px;
+    border: 1px solid var(--ride-border-strong);
+    border-radius: 16px;
+    background: rgba(255, 255, 255, .04);
+}
+body.platform-app[data-route="player"] .ride-devices[hidden] { display: none; }
+body.platform-app[data-route="player"] .ride-devices--head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 10px;
+}
+body.platform-app[data-route="player"] .ride-devices--head h3 { margin: 0; font-size: 15px; }
+body.platform-app[data-route="player"] .ride-library-link { margin: 16px 0 0; }
 body.platform-app[data-route="player"] .ride-heading h2 {
     font-size: clamp(24px, 2.6vw, 34px);
     letter-spacing: -.045em;
@@ -1675,6 +1747,60 @@ body.platform-app[data-route="player"] .ride-zone-stat strong {
     text-overflow: ellipsis;
     max-width: 100%;
 }
+body.platform-app[data-route="player"] .ride-summary > span { min-width: 0; }
+/* A running ride stays visible from every other page and returns to the cockpit. */
+body.platform-app:not([data-route="player"]) #platform .ride-banner {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 0 0 18px;
+    padding: 12px 16px;
+    border: 1px solid color-mix(in srgb, var(--tmw-blue) 35%, var(--platform-border));
+    border-radius: 14px;
+    background: linear-gradient(135deg, #0a2033, #071827);
+    color: #eef4fa;
+    text-decoration: none;
+    box-shadow: 0 12px 30px rgba(7, 24, 39, .18);
+}
+body.platform-app:not([data-route="player"]) #platform .ride-banner:hover {
+    border-color: var(--tmw-cyan);
+    text-decoration: none;
+}
+body.platform-app:not([data-route="player"]) #platform .ride-banner--pulse {
+    flex: none;
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: var(--tmw-cyan);
+    box-shadow: 0 0 0 4px rgba(0, 200, 248, .18);
+}
+body.platform-app:not([data-route="player"]) #platform .ride-banner--text {
+    display: grid;
+    flex: 1;
+    gap: 1px;
+    min-width: 0;
+}
+body.platform-app:not([data-route="player"]) #platform .ride-banner--text strong {
+    color: #fff;
+    font-size: 14px;
+    font-weight: 700;
+}
+body.platform-app:not([data-route="player"]) #platform .ride-banner--text span {
+    overflow: hidden;
+    color: #93a8bd;
+    font-size: 12px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+body.platform-app:not([data-route="player"]) #platform .ride-banner--action {
+    flex: none;
+    padding: 7px 14px;
+    border-radius: 999px;
+    background: var(--tmw-blue);
+    color: #fff;
+    font-size: 13px;
+    font-weight: 650;
+}
 body.platform-app[data-route="player"] .ride-zone-stat strong::before {
     content: "";
     display: inline-block;
@@ -1794,13 +1920,51 @@ body.platform-app[data-route="player"] #ride-unsaved {
 body.platform-app[data-route="player"] #ride-unsaved h3 { color: #ffc0a6; }
 
 @media (max-width: 700px) {
+    /* The ride is a full-screen cockpit: no tab bar, no page header, only the ride. */
+    body.mobile-app[data-route="player"] .sidebar,
+    body.mobile-app[data-route="player"] .platform-header,
+    body.mobile-app[data-route="player"] #platform-message:empty,
+    body.mobile-app[data-route="player"] #ride-banner-slot,
+    body.mobile-app[data-route="player"] #legacy-slot {
+        display: none;
+    }
+    body.mobile-app[data-route="player"] #main-content {
+        max-width: none;
+        min-height: 100dvh;
+        margin: 0;
+        padding: 0;
+    }
+    body.mobile-app[data-route="player"] #platform-content { min-height: 100dvh; }
     body.mobile-app[data-route="player"] .ride-panel {
-        padding: 14px;
-        border-radius: 20px;
+        display: flex;
+        flex-direction: column;
+        min-height: 100dvh;
+        padding: max(10px, env(safe-area-inset-top)) 12px calc(96px + env(safe-area-inset-bottom));
+        border: 0;
+        border-radius: 0;
+        box-shadow: none;
+    }
+    body.mobile-app[data-route="player"] .ride-panel::before { display: none; }
+    body.mobile-app[data-route="player"] .ride-topbar {
+        gap: 8px;
+        margin-bottom: 10px;
+    }
+    body.mobile-app[data-route="player"] #platform .ride-exit,
+    body.mobile-app[data-route="player"] #platform .ride-topbar--devices {
+        padding: 0 12px;
+        font-size: 12px;
+    }
+    body.mobile-app[data-route="player"] .ride-topbar--name { font-size: 17px; }
+    body.mobile-app[data-route="player"] .ride-body {
+        display: flex;
+        flex: 1;
+        flex-direction: column;
+        gap: 10px;
     }
     body.mobile-app[data-route="player"] .ride-metrics {
         grid-template-columns: repeat(3, minmax(0, 1fr));
         grid-template-rows: auto;
+        gap: 8px;
     }
     body.mobile-app[data-route="player"] .ride-metric.primary,
     body.mobile-app[data-route="player"] .ride-metric.countdown,
@@ -1809,19 +1973,39 @@ body.platform-app[data-route="player"] #ride-unsaved h3 { color: #ffc0a6; }
         grid-row: auto;
     }
     body.mobile-app[data-route="player"] .ride-metric {
-        min-height: 142px;
-        padding: 12px 6px;
+        min-height: 0;
+        padding: 10px 6px;
     }
     body.mobile-app[data-route="player"] .ride-live-value strong { font-size: clamp(34px, 9vw, 52px); }
     body.mobile-app[data-route="player"] .ride-metric.countdown strong { font-size: clamp(30px, 7vw, 44px); }
     body.mobile-app[data-route="player"] #ride-cadence-prescription strong { font-size: clamp(26px, 6vw, 36px); }
-    body.mobile-app[data-route="player"] .ride-actions {
-        bottom: calc(var(--tab-bar-height) + 6px);
-        background: rgba(7, 24, 39, .9);
+    body.mobile-app[data-route="player"] .ride-summary {
+        margin: 0;
+        padding: 8px 0;
     }
-    body.mobile-app[data-route="player"] .ride-summary > span { min-width: 0; }
     body.mobile-app[data-route="player"] .ride-zone-stat strong { font-size: 12px; }
     body.mobile-app[data-route="player"] .ride-zone-stat strong::before { display: none; }
+    body.mobile-app[data-route="player"] .ride-workout-profile {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        padding: 10px 10px 12px;
+    }
+    body.mobile-app[data-route="player"] .ride-actions {
+        position: fixed;
+        right: 12px;
+        bottom: calc(10px + env(safe-area-inset-bottom));
+        left: 12px;
+        z-index: 20;
+        margin: 0;
+        background: rgba(7, 24, 39, .92);
+        backdrop-filter: blur(14px);
+    }
+    body.mobile-app[data-route="player"] #platform .ride-actions button {
+        min-height: 54px;
+        font-size: 13px;
+    }
 }
 
 @media (forced-colors: active) {

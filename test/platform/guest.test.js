@@ -97,10 +97,11 @@ test('mobile guests can ride and use local features without a backend version di
     expect(root.querySelector('[data-action="backup"]')).not.toBeNull();
     expect(root.querySelector('#delete-account')).toBeNull();
     await go('player');
-    root.querySelector('[data-action="ride-toggle"]').click();
+    expect(root.querySelector('[data-action="ride-toggle"]')).toBeNull();
+    expect(root.querySelector('#ride-status').textContent).toBe('Pedal to start');
+    root.querySelector('[data-action="target-up"]').click();
     await settle();
-    expect(xf.dispatch).toHaveBeenCalledWith('ui:watchStart');
-    expect(xf.dispatch).toHaveBeenCalledWith('ui:workoutStart');
+    expect(xf.dispatch).toHaveBeenCalledWith('ui:power-target-inc');
     xf.dispatch('activity:save:success', {id: 'local-ride', duration: 60});
     await go('activities');
     expect(root.textContent).toContain('No account or upload is required');

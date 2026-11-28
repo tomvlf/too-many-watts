@@ -152,6 +152,7 @@ export async function launchPlatform(root) {
             <div class="platform-heading"><span class="mobile-brand-mark" aria-hidden="true"></span>
                 <div><p class="eyebrow" id="route-subtitle"></p><h1 id="route-title" tabindex="-1"></h1></div></div>
         </header><div id="platform-message" role="status" aria-live="polite"></div>
+        <div id="ride-banner-slot"></div>
         <div id="platform-content"><p role="status">Loading your training...</p></div>
         <div id="legacy-slot"></div></main>`);
     if(!mobile) mountVersions(root);
@@ -172,6 +173,7 @@ export async function launchPlatform(root) {
         }
     }
     const content = root.querySelector('#platform-content');
+    const bannerSlot = root.querySelector('#ride-banner-slot');
     const message = root.querySelector('#platform-message');
     let db;
     let engineModels;
@@ -689,52 +691,71 @@ export async function launchPlatform(root) {
                 card('Training metrics', html`<p>Configure your Coach profile to calculate training-load and power metrics from your history. No inferred fitness score is shown without sufficient data.</p>`)}`;
     }
     /**
-     * Build the ride screen once with target/actual readings, the timed profile and save-recovery
-     * controls. updateRide fills and refreshes those placeholders.
+     * Build the full-screen ride cockpit: its own top bar, the live power hero, the interval
+     * countdown and cadence, the summary strip, the profile and a floating control deck. The
+     * engine keeps running when the rider leaves this page; updateRide fills the placeholders.
      */
     function player() {
         timeline = rideTimeline(db.workout, db.ftp, targetPower);
-        return html`<section class="ride-panel"><div class="ride-heading"><div><p class="eyebrow">Workout player</p><h2>${db.workout?.meta?.name || 'Free ride'}${db.workout?.trainNow ? html` <span class="plan-chip">Train Now</span>` : ''}</h2></div>
-            <span id="ride-status" role="status"></span></div>
-            ${db.workout?.trainNow ? html`<details class="ride-train-now" open><summary>Why this workout?</summary><p>${db.workout.trainNow.reasoning}</p></details>` : ''}
-            <div class="ride-metrics">
-                <div class="ride-metric primary"><span class="ride-metric-label">Live power</span>
-                    <div class="ride-live-value"><strong id="ride-power">--</strong><small>W</small></div>
-                    <div class="ride-target-row"><span>Target</span><b id="ride-target">--</b><small>W</small></div>
-                    <span id="ride-power-state" class="ride-power-state">Waiting for power</span></div>
-                <div class="ride-metric countdown"><span class="ride-metric-label">Interval left</span>
-                    <strong id="ride-countdown">--</strong><span id="ride-interval"></span></div>
-                <div class="ride-metric"><span id="ride-cadence-label" class="ride-metric-label">Cadence</span><div id="ride-cadence-prescription" hidden><strong id="ride-cadence-target"></strong><small id="ride-cadence-unit">rpm</small></div>
-                    <span class="ride-reading">Actual <b id="ride-cadence">--</b> rpm</span></div>
+        const workoutName = db.workout?.meta?.name || 'Free ride';
+        return html`<section class="ride-panel" aria-label="Ride cockpit">
+            <header class="ride-topbar">
+                <a class="ride-exit" href="#/dashboard" aria-label="Leave the ride screen. The session keeps running.">
+                    <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m14 6-6 6 6 6"/></svg>
+                    <span>App</span></a>
+                <div class="ride-topbar--title"><span class="ride-topbar--name">${workoutName}${db.workout?.trainNow ? html` <span class="plan-chip">Train Now</span>` : ''}</span>
+                    <span id="ride-status" role="status"></span></div>
+                <button type="button" class="ride-topbar--devices" data-ride-devices aria-expanded="false" aria-controls="ride-devices">
+                    <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false" fill="none"
+                        stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7.5 17 16.5l-5 4.5v-18l5 4.5L7 16.5"/></svg>
+                    <span>Devices</span></button>
+            </header>
+            <div class="ride-body">
+                ${db.workout?.trainNow ? html`<details class="ride-train-now"><summary>Why this workout?</summary><p>${db.workout.trainNow.reasoning}</p></details>` : ''}
+                <div class="ride-metrics">
+                    <div class="ride-metric primary"><span class="ride-metric-label">Live power</span>
+                        <div class="ride-live-value"><strong id="ride-power">--</strong><small>W</small></div>
+                        <div class="ride-target-row"><span>Target</span><b id="ride-target">--</b><small>W</small></div>
+                        <span id="ride-power-state" class="ride-power-state">Waiting for power</span></div>
+                    <div class="ride-metric countdown"><span class="ride-metric-label">Interval left</span>
+                        <strong id="ride-countdown">--</strong><span id="ride-interval"></span></div>
+                    <div class="ride-metric"><span id="ride-cadence-label" class="ride-metric-label">Cadence</span><div id="ride-cadence-prescription" hidden><strong id="ride-cadence-target"></strong><small id="ride-cadence-unit">rpm</small></div>
+                        <span class="ride-reading">Actual <b id="ride-cadence">--</b> rpm</span></div>
+                </div>
+                <div class="ride-summary"><span><small>Heart rate</small><strong id="ride-hr">--</strong><b>bpm</b></span>
+                    <span><small>Elapsed</small><strong id="ride-elapsed">--</strong></span>
+                    <span><small>Workout left</small><strong id="ride-remaining">--</strong></span>
+                    <span class="ride-zone-stat"><small>Intensity</small><strong id="ride-target-zone">--</strong></span></div>
+                <section class="ride-workout-profile" aria-labelledby="ride-profile-heading">
+                    <div class="ride-profile-heading"><div><h3 id="ride-profile-heading">Workout power profile</h3>
+                        <span class="ride-profile-zone-summary">FTP-relative intensity zones</span></div><span id="ride-position-label"></span></div>
+                    <div id="ride-profile" class="ride-profile" role="img" aria-label="Workout target power profile">${rideProfile(timeline)}</div>
+                    <progress id="ride-progress" max="1" value="0" aria-label="Workout progress" ${timeline ? '' : 'hidden'}></progress>
+                    <div class="interval-context"><div class="ride-zone-legend" aria-label="Power zone legend">
+                        <span><i class="zone-one"></i>Easy</span><span><i class="zone-four"></i>Threshold</span>
+                        <span><i class="zone-five"></i>Hard</span><span><i class="zone-seven"></i>Peak</span></div><strong id="ride-next"></strong></div>
+                </section>
+                <p id="ride-instruction" class="ride-instruction" hidden></p>
+                <section id="ride-unsaved" role="alert" hidden><h3>Recording needs saving</h3>
+                    <p>Keep this page open. Download your FIT file now, or retry local storage after freeing space.</p>
+                    <div class="button-row"><button data-action="recover-download">Download unsaved FIT</button>
+                    <button class="secondary" data-action="recover-save">Retry saving</button></div></section>
+                <div id="ride-devices" class="ride-devices" hidden>
+                    <div class="ride-devices--head"><h3>Devices &amp; trainer</h3>
+                        <button type="button" class="secondary" data-ride-devices>Close</button></div>
+                    <div class="ride-sensors">${deviceButtons()}</div>
+                    <div class="ride-adjust"><label>Trainer mode<select id="ride-mode"><option value="erg">ERG</option>
+                        <option value="resistance">Resistance</option><option value="sim">Slope</option></select></label>
+                        <button class="secondary" data-action="target-down" aria-label="Decrease current target">-</button>
+                        <span id="ride-adjust-value"></span><button class="secondary" data-action="target-up" aria-label="Increase current target">+</button></div>
+                    <p class="muted" id="ride-recovery">${db.elapsed ? 'Ride recovered on this device. Reconnect sensors and pedal to resume.' : 'Connect a trainer and sensors, then pedal to start. Pauses after 5 seconds without pedaling.'}</p>
+                </div>
+                <p class="ride-library-link">${link('library', 'Choose a workout')}</p>
             </div>
-            <div class="ride-summary"><span><small>Heart rate</small><strong id="ride-hr">--</strong><b>bpm</b></span>
-                <span><small>Elapsed</small><strong id="ride-elapsed">--</strong></span>
-                <span><small>Workout left</small><strong id="ride-remaining">--</strong></span>
-                <span class="ride-zone-stat"><small>Intensity</small><strong id="ride-target-zone">--</strong></span></div>
-            <section class="ride-workout-profile" aria-labelledby="ride-profile-heading">
-                <div class="ride-profile-heading"><div><h3 id="ride-profile-heading">Workout power profile</h3>
-                    <span class="ride-profile-zone-summary">FTP-relative intensity zones</span></div><span id="ride-position-label"></span></div>
-                <div id="ride-profile" class="ride-profile" role="img" aria-label="Workout target power profile">${rideProfile(timeline)}</div>
-                <progress id="ride-progress" max="1" value="0" aria-label="Workout progress" ${timeline ? '' : 'hidden'}></progress>
-                <div class="interval-context"><div class="ride-zone-legend" aria-label="Power zone legend">
-                    <span><i class="zone-one"></i>Easy</span><span><i class="zone-four"></i>Threshold</span>
-                    <span><i class="zone-five"></i>Hard</span><span><i class="zone-seven"></i>Peak</span></div><strong id="ride-next"></strong></div>
-            </section>
-            <p id="ride-instruction" class="ride-instruction" hidden></p>
-            <div class="ride-actions"><button data-action="ride-toggle" id="ride-toggle">Start workout</button>
+            <div class="ride-actions" role="group" aria-label="Ride controls">
                 <button class="secondary" data-action="ride-skip">Skip interval</button>
-                <button class="secondary" data-action="ride-finish">Finish & save</button></div>
-            <p>${link('library', 'Choose a workout')}</p>
-            <section id="ride-unsaved" role="alert" hidden><h3>Recording needs saving</h3>
-                <p>Keep this page open. Download your FIT file now, or retry local storage after freeing space.</p>
-                <div class="button-row"><button data-action="recover-download">Download unsaved FIT</button>
-                <button class="secondary" data-action="recover-save">Retry saving</button></div></section>
-            <details class="ride-settings"><summary>Devices &amp; trainer settings</summary><div class="ride-sensors">${deviceButtons()}</div>
-            <div class="ride-adjust"><label>Trainer mode<select id="ride-mode"><option value="erg">ERG</option>
-                <option value="resistance">Resistance</option><option value="sim">Slope</option></select></label>
-                <button class="secondary" data-action="target-down" aria-label="Decrease current target">-</button>
-                <span id="ride-adjust-value"></span><button class="secondary" data-action="target-up" aria-label="Increase current target">+</button></div></details>
-            <p class="muted" id="ride-recovery">${db.elapsed ? 'Ride recovered on this device. Reconnect sensors before resuming.' : 'Connect a trainer and sensors, then start. Your ride is recovered locally after an interruption.'}</p>
+                <button class="secondary" data-action="ride-finish">Finish &amp; save</button></div>
         </section>`;
     }
     /**
@@ -983,6 +1004,39 @@ export async function launchPlatform(root) {
     let dailyGoalEditor = false;
     let dailyGoalPreview = null;
     /**
+     * A ride keeps running while the rider is elsewhere in the app. This banner makes the active
+     * session visible and returns to it; it is never shown on the cockpit itself.
+     */
+    const rideBanner = () => {
+        if(!db || db.watchStatus === 'stopped' || !db.elapsed) return html``;
+        const running = db.watchStatus === 'started';
+        const name = db.workout?.meta?.name || 'Free ride';
+        return html`<a class="ride-banner" href="#/player" aria-label="Return to the active ride: ${name}">
+            <span class="ride-banner--pulse" aria-hidden="true"></span>
+            <span class="ride-banner--text"><strong>${running ? 'Ride in progress' : 'Ride paused'}</strong>
+                <span>${name} · ${time(db.elapsed)}</span></span>
+            <span class="ride-banner--action">Back to ride</span></a>`;
+    };
+    // Update the active-ride banner in its own slot so ticks never re-render the current page.
+    const updateRideBanner = () => {
+        if(!ready) return;
+        const active = route !== 'player' && db.watchStatus !== 'stopped' && db.elapsed > 0;
+        const banner = bannerSlot.querySelector('.ride-banner');
+        if(!active) {
+            if(banner) setHTML(bannerSlot, html``);
+            return;
+        }
+        if(!banner) {
+            setHTML(bannerSlot, rideBanner());
+            return;
+        }
+        const running = db.watchStatus === 'started';
+        const name = db.workout?.meta?.name || 'Free ride';
+        banner.setAttribute('aria-label', `Return to the active ride: ${name}`);
+        banner.querySelector('.ride-banner--text strong').textContent = running ? 'Ride in progress' : 'Ride paused';
+        banner.querySelector('.ride-banner--text span').textContent = `${name} · ${time(db.elapsed)}`;
+    };
+    /**
      * Draw the selected platform page or expose the existing calendar/Coach/device/editor elements.
      * Do nothing before engine startup and profile handling finish.
      */
@@ -995,12 +1049,13 @@ export async function launchPlatform(root) {
         markNavigation();
         document.body.dataset.route = route;
         legacy.hidden = !['calendar', 'coach', 'editor'].includes(route);
-        setHTML(content, route === 'dashboard' ? dashboard(data) : route === 'library' ? renderLibrary(db.workouts, libraryFilters,
+        setHTML(content, route === 'player' ? player() : route === 'dashboard' ? dashboard(data) : route === 'library' ? renderLibrary(db.workouts, libraryFilters,
             {page: libraryPage, pageSize: mobile ? 6 : Infinity})
             : route === 'workout' ? details(data) : route === 'plan' ? plan(data)
                 : route === 'activities' ? activities(data) : route === 'progress' ? progress(data)
-                    : route === 'player' ? player() : route === 'settings' ? settings()
+                    : route === 'settings' ? settings()
                         : route === 'coach' ? html`<p class="muted">Your on-device Coach plans around your goal, schedule and ride history.</p>` : html``);
+        updateRideBanner();
         updateMobileSections();
         if(route === 'settings') void refreshStorageStatus();
         if(route === 'player') updateRide();
@@ -1064,8 +1119,9 @@ export async function launchPlatform(root) {
             remaining: duration ? time(remaining) : '--',
             'target-zone': targetZone?.name.replace(' · ', ' ') || '--',
             'position-label': duration ? `${time(position)} / ${time(duration)}` : 'Free ride',
-            status: db.workoutStatus === 'done' ? 'Workout complete - finish to save' : db.watchStatus,
-            toggle: db.watchStatus === 'started' ? 'Pause' : db.elapsed > 0 ? 'Resume' : 'Start workout',
+            status: db.workoutStatus === 'done' ? 'Workout complete - finish to save'
+                : db.watchStatus === 'started' ? 'Riding'
+                    : db.watchStatus === 'paused' ? 'Paused · pedal to resume' : 'Pedal to start',
             'adjust-value': db.mode === 'erg' ? `${number(db.powerTarget)} W` : db.mode === 'resistance'
                 ? `${number(db.resistanceTarget)}% resistance` : `${number(db.slopeTarget, 1)}% slope`,
         };
@@ -1102,8 +1158,7 @@ export async function launchPlatform(root) {
         const mode = root.querySelector('#ride-mode');
         if(mode && document.activeElement !== mode) mode.value = db.mode;
         root.querySelector('[data-action="ride-skip"]').disabled = db.watchStatus !== 'started' || !intervals.length;
-        root.querySelector('[data-action="ride-finish"]').disabled = !db.elapsed;
-        root.querySelector('[data-action="ride-toggle"]').disabled = savingRide || Boolean(engineModels.activity?.pendingRecording);
+        root.querySelector('[data-action="ride-finish"]').disabled = !db.elapsed || savingRide;
         root.querySelector('#ride-unsaved').hidden = !engineModels.activity?.pendingRecording;
     }
 
@@ -1254,6 +1309,17 @@ export async function launchPlatform(root) {
         }
         const device = event.target.closest('[data-device]')?.dataset.device;
         if(device) { requestedDevices.add(device); xf.dispatch(`ui:ble:${device}:switch`); return; }
+        const rideDevices = event.target.closest('[data-ride-devices]');
+        if(rideDevices) {
+            const panel = root.querySelector('#ride-devices');
+            if(panel) {
+                panel.hidden = !panel.hidden;
+                root.querySelectorAll('[data-ride-devices]').forEach(button =>
+                    button.setAttribute('aria-expanded', String(!panel.hidden)));
+                if(!panel.hidden) panel.querySelector('button, select')?.focus();
+            }
+            return;
+        }
         const download = event.target.closest('[data-download]')?.dataset.download;
         if(download) {
             void run(async () => { const {models} = await import('../models/models.js'); await models.activity.download(download); });
@@ -1555,10 +1621,6 @@ export async function launchPlatform(root) {
                 window.location.hash = '/player';
                 xf.dispatch('ui:watchStart');
                 xf.dispatch('ui:workoutStart');
-            } else if(action === 'ride-toggle') {
-                if(db.watchStatus === 'started') xf.dispatch('ui:watchPause');
-                else if(db.elapsed > 0) xf.dispatch('ui:watchResume');
-                else { xf.dispatch('ui:watchStart'); xf.dispatch('ui:workoutStart'); }
             } else if(action === 'recover-download') {
                 const record = engineModels.activity.pendingRecording;
                 const {fileHandler} = await import('../file.js');
@@ -1704,6 +1766,7 @@ export async function launchPlatform(root) {
     xf.sub('db:workouts', () => { if(ready && route === 'library') render(); });
     for(const key of ['elapsed', 'lapTime', 'power1s', 'powerTarget', 'cadence', 'cadenceTarget', 'heartRate', 'watchStatus',
         'workoutStatus', 'intervalIndex', 'stepIndex', 'workoutTextEvent', 'mode', 'resistanceTarget', 'slopeTarget', 'sources']) xf.sub(`db:${key}`, updateRide);
+    for(const key of ['elapsed', 'watchStatus', 'workout']) xf.sub(`db:${key}`, updateRideBanner);
     for(const key of ['workout', 'ftp']) xf.sub(`db:${key}`, () => { if(ready && route === 'player') render(); });
     /**
      * Keep both platform and legacy profile controls locked while Intervals.icu owns the values. A
