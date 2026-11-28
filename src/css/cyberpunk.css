@@ -671,6 +671,22 @@ body.platform-app::before {
     background: #f2f6f9;
     color: var(--tmw-navy);
 }
+.coach-attention {
+    border-color: #ffd0ca;
+    background: #fff3f2;
+}
+.coach-attention--icon {
+    background: #ffe4e0;
+    color: #b42318;
+}
+.coach-attention--head strong { color: #7a271a; }
+.coach-attention li { color: #7a271a; }
+.coach-hero-eyebrow { color: #91a8b8; }
+.coach-hero-eyebrow .coach-badge { margin: 0; }
+.coach-hero-date { color: #aabccc; }
+.coach-facts > div { border-color: var(--platform-border); background: #f7fafc; }
+.coach-facts span { color: var(--platform-muted); }
+.coach-facts strong { color: var(--tmw-navy); }
 
 .coach-step-number {
     width: 32px;
@@ -790,11 +806,18 @@ body[data-route="coach"] #legacy-slot coaching-panel {
 }
 
 #legacy-slot coaching-panel .coach-step h3 {
-    margin-bottom: 18px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
     color: var(--tmw-navy);
     font-size: clamp(18px, 2vw, 22px);
     font-weight: 760;
     letter-spacing: -.025em;
+}
+
+#legacy-slot coaching-panel .coach-step h3 .coach-step-number {
+    flex: none;
 }
 
 #legacy-slot coaching-panel .coach-fields {

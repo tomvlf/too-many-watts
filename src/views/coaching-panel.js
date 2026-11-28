@@ -45,6 +45,7 @@ const FEELINGS = [
 ];
 const RPE = ['Rest', 'Very, very easy', 'Very easy', 'Easy', 'Moderate', 'Somewhat hard', 'Hard', 'Very hard',
     'Very, very hard', 'Near maximal', 'Maximal'];
+const attentionIcon = '<svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 2.5 20h19L12 3z"/><path d="M12 10v4M12 17.5h.01"/></svg>';
 const HEART_RATE = [['maxHeartRate', 'Maximum heart rate'], ['thresholdHeartRate', 'Threshold heart rate'],
     ['restingHeartRate', 'Resting heart rate']];
 const EQUIPMENT = [['powerMeter', 'Power meter'], ['heartRateMonitor', 'Heart-rate monitor'], ['smartTrainer', 'Smart trainer']];
@@ -148,11 +149,19 @@ class CoachingPanel extends HTMLElement {
         const progress = workouts.length ? Math.round(done / workouts.length * 100) : 0;
         const adultConfirmed = profile.adultAthleteConfirmed === true;
         const next = plan.trainingPaused || !adultConfirmed ? null : upcoming[0];
+        // Collect actionable attention items into one list instead of a row of alert boxes.
+        const attention = [];
+        if(ftpChanged) attention.push(`Your profile FTP has changed (plan: ${escape(profile.ftp ?? 'none')} W, profile: ${escape(db.ftp ?? 'none')} W). Archive and regenerate this plan before starting its workouts.`);
+        if(plan.trainingPaused || data.safetyStatus) attention.push(`Training is paused while ${escape(data.safetyStatus || 'symptom status is being reviewed')} is reported. Do not start or export planned sessions. If symptoms are concerning, persistent, worsening, or affect normal activity, seek assessment from a qualified healthcare professional.`);
+        if(!adultConfirmed) attention.push('This legacy profile has no adult confirmation. Archive and reconfigure, confirming the athlete is 18 or older, before starting or exporting coached workouts.');
+        if(!plan.workouts.length) attention.push('No sessions fit the current training-load and availability limits. Review the warnings below and check your history and profile before archiving and regenerating.');
+        const overdueAction = overdue && !plan.trainingPaused && adultConfirmed;
         return `
             <header class="coach-hero coach-hero--active">
                 <div class="coach-hero-copy">
+                    <div class="coach-hero-eyebrow">${phase ? `<span class="coach-badge">${escape(PHASES[phase.type] || label(phase.type))}</span>` : ''}<span>${escape(goalLabel(goal.type))}</span></div>
                     <h2>${escape(goal.name || 'Training plan')}</h2>
-                    <p class="muted">${escape(goalLabel(goal.type))} · ${escape(dayLabel(goal.date || plan.endDate,
+                    <p class="coach-hero-date">${escape(dayLabel(goal.date || plan.endDate,
                         {weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'}))}</p>
                 </div>
                 <div class="coach-stats">
@@ -162,17 +171,13 @@ class CoachingPanel extends HTMLElement {
                 </div>
                 <div class="coach-progress" role="progressbar" aria-label="Plan progress" aria-valuemin="0"
                     aria-valuemax="100" aria-valuenow="${progress}"><i style="width: ${progress}%"></i></div>
-                ${phase ? `<p class="coach-phase"><span class="coach-badge">${escape(PHASES[phase.type] || label(phase.type))}</span>
-                    until ${escape(dayLabel(phase.endDate))}</p>` : ''}
             </header>
-            ${ftpChanged ? `<p class="coach-alert" role="alert">Your profile FTP has changed (plan: ${escape(profile.ftp ?? 'none')} W,
-                profile: ${escape(db.ftp ?? 'none')} W). Archive and regenerate this plan before starting its workouts.</p>` : ''}
-            ${plan.trainingPaused || data.safetyStatus ? `<p class="coach-alert" role="alert">Training is paused while
-                ${escape(data.safetyStatus || 'symptom status is being reviewed')} is reported. Do not start or export planned sessions.
-                If symptoms are concerning, persistent, worsening, or affect normal activity, seek assessment from a qualified healthcare professional.</p>` : ''}
-            ${!adultConfirmed ? '<p class="coach-alert" role="alert">This legacy profile has no adult confirmation. Archive and reconfigure, confirming the athlete is 18 or older, before starting or exporting coached workouts.</p>' : ''}
-            ${!plan.workouts.length ? '<p class="coach-alert" role="status">No sessions fit the current training-load and availability limits. Review the warnings below and check your history and profile before archiving and regenerating.</p>' : ''}
-            ${overdue && !plan.trainingPaused && adultConfirmed ? `<div class="coach-callout">
+            ${attention.length ? `<div class="coach-attention" role="alert">
+                <div class="coach-attention--head"><span class="coach-attention--icon" aria-hidden="true">${attentionIcon}</span>
+                    <strong>${attention.length === 1 ? 'One thing needs your attention' : `${attention.length} things need your attention`}</strong></div>
+                <ul>${attention.map(item => `<li>${item}</li>`).join('')}</ul>
+            </div>` : ''}
+            ${overdueAction ? `<div class="coach-callout">
                 <p><strong>${overdue} past session${overdue === 1 ? '' : 's'} not yet resolved.</strong>
                     ${running ? 'Runs and activities' : 'Rides'} you recorded are matched automatically. Review the rest so the coach can adapt; missed training is never made up.</p>
                 <button type="button" data-coach="review">Review missed sessions</button></div>` : ''}
@@ -182,11 +187,11 @@ class CoachingPanel extends HTMLElement {
                     ${next ? `
                         <p class="coach-next-date">${next.date === today ? 'Today' : escape(dayLabel(next.date, {weekday: 'long', day: 'numeric', month: 'long'}))}</p>
                         <p class="coach-next-title">${escape(next.title)}</p>
-                        <p class="muted">${minutes(next.duration)} · Effort ${escape(next.expectedRpe)}/10 (${escape(RPE[next.expectedRpe] || '')})</p>
-                        <p>${escape(String(next.description ?? "").replace(/^./, c => c.toUpperCase()))}</p>
+                        <p class="coach-next-meta">${minutes(next.duration)} · Effort ${escape(next.expectedRpe)}/10 (${escape(RPE[next.expectedRpe] || '')})</p>
+                        <p class="coach-next-desc">${escape(String(next.description ?? "").replace(/^./, c => c.toUpperCase()))}</p>
                         ${next.date === today && !running
                             ? `<a class="button" href="#/workout/${encodeURIComponent(next.id)}">Prepare to ride</a>`
-                            : '<a class="button" href="#/calendar">Open calendar</a>'}`
+                            : '<a class="button" href="#/calendar">Open calendar</a>'} `
                         : plan.trainingPaused || !adultConfirmed ? '<p class="muted">No session is offered until the safety and adult-confirmation requirements are met.</p>'
                             : '<p class="muted">No more sessions are planned. Archive this plan and set a new goal to continue.</p>'}
                 </section>
@@ -216,22 +221,25 @@ class CoachingPanel extends HTMLElement {
             </section>
             <details class="coach-card">
                 <summary>Why this plan? <span class="muted">Revision ${plan.revision}</span></summary>
-                <p>${escape(plan.rationale)}</p>
-                <p><strong>Training data:</strong> ${escape(DATA_QUALITY[state?.sufficiency] || state?.sufficiency)}
-                    Load is measured by ${escape(state?.loadSource)}. ${escape(state?.readiness.reason)}</p>
-                ${running ? `<p><strong>Threshold pace:</strong> ${profile.thresholdPace
-                    ? `${escape(formatPace(profile.thresholdPace, profile.unitSystem))}. Run targets are shown as pace ranges in the calendar.`
-                    : 'not set, so runs are prescribed by effort (RPE) and duration only.'}</p>` : ''}
+                <p class="coach-rationale">${escape(plan.rationale)}</p>
+                <div class="coach-facts">
+                    <div><span>Training data</span><strong>${escape(DATA_QUALITY[state?.sufficiency] || state?.sufficiency)}</strong></div>
+                    <div><span>Load basis</span><strong>${escape(state?.loadSource)}</strong></div>
+                    <div><span>Readiness</span><strong>${escape(state?.readiness.reason)}</strong></div>
+                    ${running ? `<div><span>Threshold pace</span><strong>${profile.thresholdPace
+                        ? `${escape(formatPace(profile.thresholdPace, profile.unitSystem))}`
+                        : 'not set'}</strong></div>` : ''}
+                </div>
                 <h4>Phases</h4>
-                <ul>${plan.phases.map(p => `<li>${escape(dayLabel(p.startDate))} - ${escape(dayLabel(p.endDate))}:
+                <ul class="coach-list">${plan.phases.map(p => `<li>${escape(dayLabel(p.startDate))} - ${escape(dayLabel(p.endDate))}:
                     <strong>${escape(PHASES[p.type] || label(p.type))}</strong>. ${escape(p.rationale)}</li>`).join('')}</ul>
                 <h4>Weeks</h4>
-                <ul>${plan.weeks.map(w => `<li>Week of ${escape(dayLabel(w.startDate))}: ${Math.round(w.scheduledMinutes)} min.
+                <ul class="coach-list">${plan.weeks.map(w => `<li>Week of ${escape(dayLabel(w.startDate))}: ${Math.round(w.scheduledMinutes)} min.
                     ${escape(w.rationale)}</li>`).join('')}</ul>
                 ${[...plan.validationWarnings, ...(state?.warnings || [])].length ? `<h4>Warnings</h4>
-                    <ul>${[...plan.validationWarnings, ...(state?.warnings || [])].map(w => `<li>${escape(w)}</li>`).join('')}</ul>` : ''}
+                    <ul class="coach-list">${[...plan.validationWarnings, ...(state?.warnings || [])].map(w => `<li>${escape(w)}</li>`).join('')}</ul>` : ''}
                 ${plan.adaptations.length ? `<h4>Recent changes</h4>
-                    <ul>${plan.adaptations.slice(-5).map(a => `<li>${escape(new Date(a.timestamp).toLocaleString())}:
+                    <ul class="coach-list">${plan.adaptations.slice(-5).map(a => `<li>${escape(new Date(a.timestamp).toLocaleString())}:
                         ${escape(a.reasoning)}</li>`).join('')}</ul>` : ''}
                 <p class="muted">Session status: ${Object.entries(STATUS).map(([key, text]) =>
                     `${text} ${workouts.filter(w => w.status === key).length}`).join(' · ')}</p>
