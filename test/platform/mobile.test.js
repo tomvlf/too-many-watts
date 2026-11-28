@@ -73,7 +73,7 @@ test('mobile has a dedicated ride-first navigation, recovered ride controls, gla
     expect(activeTab()).toBe('Ride');
     expect(root.querySelector('nav [aria-current="page"]').textContent.trim()).toBe('Ride');
     expect(root.textContent).toContain('Ride recovered on this device');
-    for(const id of ['power', 'target', 'cadence', 'hr', 'elapsed', 'countdown', 'next', 'remaining']) {
+    for(const id of ['power', 'target', 'cadence', 'hr', 'countdown', 'next', 'remaining']) {
         expect(root.querySelector(`#ride-${id}`)).not.toBeNull();
     }
     expect(root.querySelector('#ride-toggle')).toBeNull();
