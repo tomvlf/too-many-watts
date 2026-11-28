@@ -42,7 +42,7 @@ mask, shadow or rounded corner when exporting it for stores or PWA manifests.
 
 | Role | Hex | Usage |
 | --- | --- | --- |
-| Deep navy | `#071827` | Navigation, dark ride cockpit and icon surface |
+| Deep navy | `#071827` | Navigation, icon surface and primary controls |
 | Structure navy | `#0B1F33` | Primary text and dark controls |
 | Steel blue | `#53687A` | Supporting text and metadata |
 | Electric blue | `#1265FF` | Primary action, selected state and gradient anchor |
@@ -83,13 +83,16 @@ avoid decorative display fonts that compete with the monogram.
 
 ## Interface
 
-The application uses two intentional environments:
+The application uses light surfaces throughout. Deep navy is reserved for
+navigation and primary controls; cyan and the training-zone colours accent
+live, current-state elements only.
 
 1. **Workspace:** light surfaces, dark text, restrained shadows and blue
    selected states for dashboard, Coach, calendar, library, activity and
    settings routes.
-2. **Ride cockpit:** deep-navy surfaces, cyan live values and minimal
-   decoration for the active training screen.
+2. **Ride cockpit:** the same light workspace — a flat cockpit with the
+   workout profile across the width and unboxed live numbers separated by
+   hairlines. Zone colours mark the current interval and progress.
 
 Panels use 16-18 px radii and quiet one-pixel borders. Primary actions use navy;
 hover and selected states use electric blue. Motion is limited to transform and

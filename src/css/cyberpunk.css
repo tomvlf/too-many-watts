@@ -1480,35 +1480,20 @@ body.platform-app[data-route="player"] #platform h2 { color: var(--tmw-navy); te
 body.platform-app[data-route="player"] #platform .eyebrow { color: var(--tmw-blue); }
 body.platform-app[data-route="player"] #platform p { color: var(--tmw-slate); }
 body.platform-app[data-route="player"] #platform .muted { color: var(--tmw-slate); }
+/*
+ * Ride cockpit. One flat light surface, like the rest of the app: a slim top bar, the workout
+ * profile across the width, then unboxed live numbers separated by hairlines. No nested cards;
+ * the zone colour of the current step accents the profile cursor, progress and state pill.
+ */
 body.platform-app[data-route="player"] .ride-panel {
-    --ride-bg: #071827;
-    --ride-surface: #0b2033;
-    --ride-surface-2: #081a2a;
-    --ride-border: rgba(151, 181, 208, .18);
-    --ride-border-strong: rgba(151, 181, 208, .3);
-    --ride-text: #eef4fa;
-    --ride-muted: #93a8bd;
+    --ride-surface: #ffffff;
+    --ride-border: #d7e1e9;
+    --ride-border-strong: #c9d6e1;
+    --ride-text: var(--tmw-navy);
+    --ride-muted: var(--platform-muted);
     --ride-zone: #00c8f8;
     position: relative;
-    padding: 26px;
-    border: 1px solid var(--ride-border-strong);
-    border-radius: 24px;
-    background: #071827;
-    background:
-        radial-gradient(120% 80% at 50% -10%, color-mix(in srgb, var(--ride-zone) 16%, transparent), transparent 62%),
-        linear-gradient(180deg, #0a2033 0%, var(--ride-bg) 55%, #06131f 100%);
-    box-shadow: 0 30px 80px rgba(7, 24, 39, .32), inset 0 1px 0 rgba(255, 255, 255, .06);
     color: var(--ride-text);
-}
-body.platform-app[data-route="player"] .ride-panel::before {
-    content: "";
-    position: absolute;
-    inset: 0 24px auto;
-    height: 2px;
-    border-radius: 0 0 2px 2px;
-    background: linear-gradient(90deg, transparent, var(--ride-zone), transparent);
-    opacity: .85;
-    pointer-events: none;
 }
 body.platform-app[data-route="player"] #platform .ride-panel h2,
 body.platform-app[data-route="player"] #platform .ride-panel h3 {
@@ -1520,19 +1505,17 @@ body.platform-app[data-route="player"] #platform .ride-panel .muted,
 body.platform-app[data-route="player"] #platform .ride-panel small {
     color: var(--ride-muted);
 }
-body.platform-app[data-route="player"] #platform .ride-panel .eyebrow { color: color-mix(in srgb, var(--ride-zone) 55%, #ffffff); }
-body.platform-app[data-route="player"] #platform .ride-panel a { color: color-mix(in srgb, var(--ride-zone) 40%, #8cd9ff); }
+body.platform-app[data-route="player"] #platform .ride-panel .eyebrow { color: var(--tmw-blue); }
+body.platform-app[data-route="player"] #platform .ride-panel a { color: var(--tmw-blue); }
 body.platform-app[data-route="player"] #platform .ride-panel label { color: var(--ride-muted); }
-body.platform-app[data-route="player"] .ride-heading {
-    align-items: flex-start;
-    margin-bottom: 18px;
-}
 /* Cockpit top bar: leave the ride, see the workout and status, open devices. */
 body.platform-app[data-route="player"] .ride-topbar {
     display: flex;
     align-items: center;
     gap: 12px;
-    margin-bottom: 18px;
+    margin-bottom: 16px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--ride-border);
 }
 body.platform-app[data-route="player"] #platform .ride-panel .ride-exit,
 body.platform-app[data-route="player"] #platform .ride-panel .ride-topbar--devices {
@@ -1540,26 +1523,27 @@ body.platform-app[data-route="player"] #platform .ride-panel .ride-topbar--devic
     flex: none;
     align-items: center;
     gap: 6px;
-    min-height: 44px;
+    min-height: 40px;
     margin: 0;
     padding: 0 14px;
-    border: 1px solid var(--ride-border-strong);
+    border: 1px solid var(--ride-border);
     border-radius: 999px;
-    background: rgba(255, 255, 255, .08);
+    background: var(--ride-surface);
     color: var(--ride-text);
     font-size: 13px;
     font-weight: 650;
     text-decoration: none;
+    box-shadow: none;
 }
 body.platform-app[data-route="player"] #platform .ride-panel .ride-exit:hover,
 body.platform-app[data-route="player"] #platform .ride-panel .ride-topbar--devices:hover {
-    border-color: color-mix(in srgb, var(--ride-zone) 55%, #ffffff);
-    background: color-mix(in srgb, var(--ride-zone) 18%, rgba(255, 255, 255, .08));
+    border-color: var(--ride-border-strong);
+    background: var(--tmw-paper);
     text-decoration: none;
 }
 body.platform-app[data-route="player"] .ride-topbar--devices[aria-expanded="true"] {
     border-color: var(--ride-zone);
-    background: color-mix(in srgb, var(--ride-zone) 18%, transparent);
+    background: color-mix(in srgb, var(--ride-zone) 9%, #fff);
 }
 body.platform-app[data-route="player"] .ride-topbar--title {
     display: grid;
@@ -1583,11 +1567,12 @@ body.platform-app[data-route="player"] .ride-topbar #ride-status {
     font-size: 11px;
 }
 body.platform-app[data-route="player"] .ride-devices {
-    margin-top: 14px;
-    padding: 14px 16px;
-    border: 1px solid var(--ride-border-strong);
-    border-radius: 16px;
-    background: rgba(255, 255, 255, .04);
+    margin-top: 16px;
+    padding: 16px;
+    border: 1px solid var(--ride-border);
+    border-radius: 14px;
+    background: var(--ride-surface);
+    box-shadow: var(--tmw-shadow);
 }
 body.platform-app[data-route="player"] .ride-devices[hidden] { display: none; }
 body.platform-app[data-route="player"] .ride-devices--head {
@@ -1599,108 +1584,61 @@ body.platform-app[data-route="player"] .ride-devices--head {
 }
 body.platform-app[data-route="player"] .ride-devices--head h3 { margin: 0; font-size: 15px; }
 body.platform-app[data-route="player"] .ride-library-link { margin: 16px 0 0; }
-body.platform-app[data-route="player"] .ride-heading h2 {
-    font-size: clamp(24px, 2.6vw, 34px);
-    letter-spacing: -.045em;
-    line-height: 1.1;
-}
 body.platform-app[data-route="player"] .ride-panel .plan-chip {
-    border: 1px solid color-mix(in srgb, var(--ride-zone) 40%, transparent);
-    background: color-mix(in srgb, var(--ride-zone) 16%, transparent);
-    color: color-mix(in srgb, var(--ride-zone) 55%, #ffffff);
+    border: 1px solid color-mix(in srgb, var(--tmw-blue) 35%, transparent);
+    background: color-mix(in srgb, var(--tmw-blue) 8%, transparent);
+    color: var(--tmw-blue);
 }
 body.platform-app[data-route="player"] #ride-status {
-    border: 1px solid var(--ride-border-strong);
-    background: rgba(255, 255, 255, .04);
-    color: var(--ride-text);
+    border: 1px solid var(--ride-border);
+    background: var(--ride-surface);
+    color: var(--ride-muted);
 }
 body.platform-app[data-route="player"] #ride-status::before {
     background: var(--ride-zone);
     box-shadow: 0 0 0 4px color-mix(in srgb, var(--ride-zone) 18%, transparent);
 }
+/* Workout profile across the width: compact, no heading and no legend; zone bars speak for themselves. */
+body.platform-app[data-route="player"] .ride-profile-wrap { display: grid; gap: 10px; }
+body.platform-app[data-route="player"] .ride-profile-plot { height: 108px; border-bottom-color: var(--ride-border); }
+body.platform-app[data-route="player"] .ride-profile-grid { stroke: #cfd9e3; }
+body.platform-app[data-route="player"] .ride-profile-active {
+    fill: var(--ride-zone);
+    fill-opacity: .12;
+    stroke: var(--ride-zone);
+    stroke-opacity: .65;
+}
+body.platform-app[data-route="player"] .ride-profile-completed { fill: #071827; fill-opacity: .07; }
+body.platform-app[data-route="player"] .ride-profile-cursor {
+    background: var(--ride-zone);
+    box-shadow: 0 0 8px color-mix(in srgb, var(--ride-zone) 55%, transparent);
+}
+body.platform-app[data-route="player"] .ride-profile-cursor span {
+    background: var(--ride-zone);
+    color: #fff;
+}
+body.platform-app[data-route="player"] .ride-profile-times { color: var(--ride-muted); }
+body.platform-app[data-route="player"] #ride-progress { accent-color: var(--ride-zone); }
+body.platform-app[data-route="player"] .interval-context { color: var(--ride-muted); }
+body.platform-app[data-route="player"] #ride-position-label { color: var(--ride-muted); }
+body.platform-app[data-route="player"] #ride-next {
+    color: var(--ride-text);
+    font-size: 12px;
+}
+/* Unboxed hero metrics: power, interval left, cadence and heart rate share one hairline row. */
 body.platform-app[data-route="player"] .ride-metrics {
-    grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
-    grid-template-rows: auto auto;
-    gap: 12px;
+    grid-template-columns: 1.15fr repeat(3, minmax(0, 1fr));
+    margin-top: 12px;
 }
-body.platform-app[data-route="player"] .ride-metric {
-    min-height: 0;
-    padding: 16px 18px;
-    border: 1px solid var(--ride-border);
-    border-radius: 18px;
-    background: linear-gradient(180deg, rgba(255, 255, 255, .05), rgba(255, 255, 255, .015));
-    color: var(--ride-text);
-}
-body.platform-app[data-route="player"] .ride-metric.primary {
-    grid-row: 1 / -1;
-    justify-content: space-between;
-    border-color: color-mix(in srgb, var(--ride-zone) 42%, var(--ride-border));
-    background:
-        radial-gradient(120% 100% at 50% 0%, color-mix(in srgb, var(--ride-zone) 18%, transparent), transparent 70%),
-        linear-gradient(180deg, rgba(255, 255, 255, .055), rgba(255, 255, 255, .015));
-}
-body.platform-app[data-route="player"] .ride-metric.countdown { grid-column: 2; grid-row: 1; }
-body.platform-app[data-route="player"] .ride-metric:not(.primary):not(.countdown) { grid-column: 2; grid-row: 2; }
-body.platform-app[data-route="player"] .ride-metric > span,
-body.platform-app[data-route="player"] .ride-metric-label {
-    color: var(--ride-muted);
-    font-size: 12px;
-    font-weight: 600;
-    letter-spacing: .01em;
-}
-body.platform-app[data-route="player"] .ride-metric strong {
-    color: var(--ride-text);
-    font-variant-numeric: tabular-nums;
-}
-body.platform-app[data-route="player"] .ride-live-value { margin: 4px 0; }
-body.platform-app[data-route="player"] .ride-live-value strong {
-    font-size: clamp(64px, 8.5vw, 118px);
-    line-height: .9;
-    letter-spacing: -.07em;
-    color: var(--ride-text);
-}
-@supports (color: color-mix(in srgb, red, blue)) and ((-webkit-background-clip: text) or (background-clip: text)) {
-    body.platform-app[data-route="player"] .ride-live-value strong {
-        background: linear-gradient(180deg, #ffffff 12%, color-mix(in srgb, var(--ride-zone) 58%, #ffffff) 100%);
-        -webkit-background-clip: text;
-        background-clip: text;
-        color: transparent;
-    }
-}
-body.platform-app[data-route="player"] .ride-live-value small {
-    color: var(--ride-muted);
-    font-size: 16px;
-}
-body.platform-app[data-route="player"] .ride-target-row {
-    color: var(--ride-muted);
-    font-size: 12px;
-}
-body.platform-app[data-route="player"] .ride-target-row b {
-    color: var(--ride-text);
-    font-size: 22px;
-}
-body.platform-app[data-route="player"] .ride-power-state {
-    border: 1px solid var(--ride-border-strong);
-    background: rgba(255, 255, 255, .04);
-    color: var(--ride-muted) !important;
-}
-body.platform-app[data-route="player"] .ride-metric.primary[data-target-state="on-target"] .ride-power-state {
-    border-color: rgba(87, 192, 87, .55);
-    background: rgba(87, 192, 87, .14);
-    color: #a8e6bd !important;
-}
-body.platform-app[data-route="player"] .ride-metric.primary[data-target-state="low"] .ride-power-state {
-    border-color: rgba(50, 138, 255, .55);
-    background: rgba(50, 138, 255, .14);
-    color: #a9d0ff !important;
-}
-body.platform-app[data-route="player"] .ride-metric.primary[data-target-state="high"] .ride-power-state {
-    border-color: rgba(255, 102, 58, .55);
-    background: rgba(255, 102, 58, .14);
-    color: #ffc0a6 !important;
-}
+body.platform-app[data-route="player"] .ride-metric { color: var(--ride-text); }
+body.platform-app[data-route="player"] .ride-metric-label { color: var(--ride-muted); }
+body.platform-app[data-route="player"] .ride-metric strong { color: var(--ride-text); }
+body.platform-app[data-route="player"] .ride-live-value strong { color: var(--ride-text); }
+body.platform-app[data-route="player"] .ride-live-value small { color: var(--ride-muted); }
+body.platform-app[data-route="player"] .ride-target-row { color: var(--ride-muted); }
+body.platform-app[data-route="player"] .ride-target-row b { color: var(--ride-text); font-size: 22px; }
 body.platform-app[data-route="player"] .ride-metric.countdown strong {
-    font-size: clamp(40px, 4.8vw, 66px);
+    font-size: clamp(38px, 4.4vw, 62px);
     line-height: 1;
     letter-spacing: -.05em;
 }
@@ -1708,10 +1646,7 @@ body.platform-app[data-route="player"] #ride-interval {
     color: var(--ride-muted);
     font-size: 12px;
 }
-body.platform-app[data-route="player"] #ride-cadence-prescription strong {
-    font-size: clamp(28px, 3vw, 40px);
-    letter-spacing: -.04em;
-}
+body.platform-app[data-route="player"] #ride-cadence-prescription strong { font-size: clamp(28px, 3vw, 40px); }
 body.platform-app[data-route="player"] .ride-reading {
     color: var(--ride-muted);
     font-size: 12px;
@@ -1720,34 +1655,34 @@ body.platform-app[data-route="player"] .ride-reading b {
     color: var(--ride-text);
     font-size: 24px;
 }
+/* Secondary readout row: elapsed, remaining and the current zone. */
 body.platform-app[data-route="player"] .ride-summary {
-    margin: 14px 0 18px;
-    padding: 12px 0;
-    border: 1px solid var(--ride-border);
-    border-radius: 14px;
-    background: rgba(255, 255, 255, .03);
+    margin: 0;
+    padding: 0;
+    border: 0;
+    border-bottom: 1px solid var(--ride-border);
+    background: transparent;
     color: var(--ride-muted);
 }
-body.platform-app[data-route="player"] .ride-summary > span { border-right-color: var(--ride-border); }
+body.platform-app[data-route="player"] .ride-summary > span { border-right: 0; min-width: 0; }
 body.platform-app[data-route="player"] .ride-summary small {
     color: var(--ride-muted);
     font-size: 10px;
-    letter-spacing: .02em;
-    text-transform: none;
+    letter-spacing: .08em;
+    text-transform: uppercase;
 }
 body.platform-app[data-route="player"] .ride-summary strong {
     color: var(--ride-text);
-    font-size: 18px;
+    font-size: 15px;
 }
 body.platform-app[data-route="player"] .ride-summary b { color: var(--ride-muted); }
 body.platform-app[data-route="player"] .ride-zone-stat strong {
-    color: color-mix(in srgb, var(--ride-zone) 55%, #ffffff);
+    color: var(--tmw-blue);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
     max-width: 100%;
 }
-body.platform-app[data-route="player"] .ride-summary > span { min-width: 0; }
 /* A running ride stays visible from every other page and returns to the cockpit. */
 body.platform-app:not([data-route="player"]) #platform .ride-banner {
     display: flex;
@@ -1801,126 +1736,72 @@ body.platform-app:not([data-route="player"]) #platform .ride-banner--action {
     font-size: 13px;
     font-weight: 650;
 }
-body.platform-app[data-route="player"] .ride-zone-stat strong::before {
-    content: "";
-    display: inline-block;
-    width: 7px;
-    height: 7px;
-    margin-right: 6px;
-    border-radius: 50%;
-    background: var(--ride-zone);
-    box-shadow: 0 0 10px var(--ride-zone);
-    vertical-align: middle;
-}
-body.platform-app[data-route="player"] .ride-workout-profile {
-    padding: 16px 20px 18px;
-    border: 1px solid var(--ride-border);
-    border-radius: 16px;
-    background: rgba(255, 255, 255, .02);
-}
-body.platform-app[data-route="player"] .ride-profile-heading h3 { font-size: 14px; }
-body.platform-app[data-route="player"] .ride-profile-zone-summary,
-body.platform-app[data-route="player"] #ride-position-label { color: var(--ride-muted); }
-body.platform-app[data-route="player"] .ride-profile-axis { color: var(--ride-muted); }
-body.platform-app[data-route="player"] .ride-profile-plot { border-bottom-color: rgba(255, 255, 255, .18); }
-body.platform-app[data-route="player"] .ride-profile-grid { stroke: rgba(255, 255, 255, .12); }
-body.platform-app[data-route="player"] .ride-profile-active {
-    fill: var(--ride-zone);
-    fill-opacity: .1;
-    stroke: var(--ride-zone);
-    stroke-opacity: .55;
-}
-body.platform-app[data-route="player"] .ride-profile-completed {
-    fill: #071827;
-    fill-opacity: .55;
-}
-body.platform-app[data-route="player"] .ride-profile-cursor {
-    background: var(--ride-zone);
-    box-shadow: 0 0 12px color-mix(in srgb, var(--ride-zone) 70%, transparent);
-}
-body.platform-app[data-route="player"] .ride-profile-cursor span {
-    background: var(--ride-zone);
-    color: #06131f;
-}
-body.platform-app[data-route="player"] .ride-profile-times { color: var(--ride-muted); }
-body.platform-app[data-route="player"] #ride-progress { accent-color: var(--ride-zone); }
-body.platform-app[data-route="player"] .interval-context { color: var(--ride-muted); }
-body.platform-app[data-route="player"] .ride-zone-legend { color: var(--ride-muted); }
-body.platform-app[data-route="player"] #ride-next {
-    padding: 4px 10px;
-    border: 1px solid var(--ride-border);
-    border-radius: 999px;
-    background: rgba(255, 255, 255, .03);
-    color: var(--ride-text);
-    font-size: 11px;
-}
 body.platform-app[data-route="player"] .ride-instruction {
-    border: 1px solid color-mix(in srgb, var(--ride-zone) 45%, transparent);
-    border-radius: 12px;
-    background: color-mix(in srgb, var(--ride-zone) 10%, transparent);
+    border-color: color-mix(in srgb, var(--tmw-blue) 32%, var(--ride-border));
+    background: color-mix(in srgb, var(--tmw-blue) 7%, #fff);
     color: var(--ride-text);
 }
+/* Controls: quiet sticky actions; finish is the one primary exit. */
 body.platform-app[data-route="player"] .ride-actions {
     position: sticky;
-    bottom: 12px;
+    bottom: 0;
     z-index: 5;
     gap: 10px;
-    margin-top: 20px;
-    padding: 10px;
-    border: 1px solid color-mix(in srgb, var(--ride-zone) 38%, var(--ride-border));
-    border-radius: 16px;
-    background: rgba(7, 24, 39, .82);
-    backdrop-filter: blur(14px);
-    box-shadow: 0 0 0 1px rgba(255, 255, 255, .04), 0 18px 40px rgba(0, 0, 0, .32), 0 0 30px color-mix(in srgb, var(--ride-zone) 16%, transparent);
+    margin-top: 24px;
+    padding: 12px 0 calc(12px + env(safe-area-inset-bottom));
+    border: 0;
+    background: linear-gradient(180deg, transparent, var(--tmw-paper) 28%);
+    box-shadow: none;
+    backdrop-filter: none;
 }
 body.platform-app[data-route="player"] .ride-actions button {
     min-height: 52px;
     border-radius: 12px;
 }
-body.platform-app[data-route="player"] #platform .ride-actions button:not(.secondary):not(.danger) {
-    border-color: transparent;
-    background: linear-gradient(135deg, #1265ff, #0b4fd6);
+body.platform-app[data-route="player"] #platform .ride-actions [data-action="ride-finish"] {
+    border-color: var(--tmw-navy);
+    background: var(--tmw-navy);
     color: #fff;
-    box-shadow: 0 10px 24px rgba(18, 101, 255, .32);
+    box-shadow: none;
 }
 body.platform-app[data-route="player"] #platform .ride-panel button.secondary {
     border-color: var(--ride-border-strong);
-    background: rgba(255, 255, 255, .06);
+    background: var(--ride-surface);
     color: var(--ride-text);
 }
 body.platform-app[data-route="player"] .ride-settings { border-top-color: var(--ride-border); }
 body.platform-app[data-route="player"] .ride-settings summary { color: var(--ride-muted); }
 body.platform-app[data-route="player"] .ride-train-now {
-    border-color: color-mix(in srgb, var(--ride-zone) 40%, transparent);
-    background: color-mix(in srgb, var(--ride-zone) 8%, transparent);
+    border-color: color-mix(in srgb, var(--tmw-blue) 30%, var(--ride-border));
+    background: var(--ride-surface);
 }
 body.platform-app[data-route="player"] .ride-train-now summary { color: var(--ride-text); }
 body.platform-app[data-route="player"] .ride-train-now p { color: var(--ride-muted); }
 body.platform-app[data-route="player"] .ride-panel .device-connect {
-    border-color: var(--ride-border-strong);
-    background: rgba(255, 255, 255, .04);
+    border-color: var(--ride-border);
+    background: var(--tmw-paper);
     color: var(--ride-text);
 }
 body.platform-app[data-route="player"] .ride-panel .device-connect--name { color: var(--ride-text); }
 body.platform-app[data-route="player"] .ride-panel .device-connect > [data-sensor] { color: var(--ride-muted); }
 body.platform-app[data-route="player"] #platform .ride-panel select,
 body.platform-app[data-route="player"] #platform .ride-panel input {
-    border-color: var(--ride-border-strong);
-    background: var(--ride-surface-2);
+    border-color: var(--ride-border);
+    background: var(--tmw-white);
     color: var(--ride-text);
 }
 body.platform-app[data-route="player"] #ride-adjust-value { color: var(--ride-text); }
 body.platform-app[data-route="player"] #ride-recovery { color: var(--ride-muted); }
 body.platform-app[data-route="player"] #ride-unsaved {
     padding: 14px 16px;
-    border: 1px solid rgba(255, 102, 58, .45);
+    border: 1px solid rgba(255, 102, 58, .5);
     border-radius: 12px;
-    background: rgba(255, 102, 58, .1);
+    background: #fff3ee;
 }
-body.platform-app[data-route="player"] #ride-unsaved h3 { color: #ffc0a6; }
+body.platform-app[data-route="player"] #ride-unsaved h3 { color: #b43a12; }
 
 @media (max-width: 700px) {
-    /* The ride is a full-screen cockpit: no tab bar, no page header, only the ride. */
+    /* The ride is a full-screen, ride-first cockpit: no tab bar, no page header, only the ride. */
     body.mobile-app[data-route="player"] .sidebar,
     body.mobile-app[data-route="player"] .platform-header,
     body.mobile-app[data-route="player"] #platform-message:empty,
@@ -1939,68 +1820,47 @@ body.platform-app[data-route="player"] #ride-unsaved h3 { color: #ffc0a6; }
         display: flex;
         flex-direction: column;
         min-height: 100dvh;
-        padding: max(10px, env(safe-area-inset-top)) 12px calc(96px + env(safe-area-inset-bottom));
-        border: 0;
-        border-radius: 0;
-        box-shadow: none;
+        padding: max(10px, env(safe-area-inset-top)) 14px calc(10px + env(safe-area-inset-bottom));
     }
-    body.mobile-app[data-route="player"] .ride-panel::before { display: none; }
     body.mobile-app[data-route="player"] .ride-topbar {
         gap: 8px;
         margin-bottom: 10px;
+        padding-bottom: 10px;
     }
     body.mobile-app[data-route="player"] #platform .ride-exit,
     body.mobile-app[data-route="player"] #platform .ride-topbar--devices {
+        min-height: 40px;
         padding: 0 12px;
         font-size: 12px;
     }
-    body.mobile-app[data-route="player"] .ride-topbar--name { font-size: 17px; }
+    body.mobile-app[data-route="player"] .ride-topbar--name { font-size: 16px; }
     body.mobile-app[data-route="player"] .ride-body {
         display: flex;
         flex: 1;
         flex-direction: column;
-        gap: 10px;
+        min-width: 0;
     }
-    body.mobile-app[data-route="player"] .ride-metrics {
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-        grid-template-rows: auto;
-        gap: 8px;
-    }
-    body.mobile-app[data-route="player"] .ride-metric.primary,
-    body.mobile-app[data-route="player"] .ride-metric.countdown,
-    body.mobile-app[data-route="player"] .ride-metric:not(.primary):not(.countdown) {
-        grid-column: auto;
-        grid-row: auto;
-    }
-    body.mobile-app[data-route="player"] .ride-metric {
-        min-height: 0;
-        padding: 10px 6px;
-    }
-    body.mobile-app[data-route="player"] .ride-live-value strong { font-size: clamp(34px, 9vw, 52px); }
-    body.mobile-app[data-route="player"] .ride-metric.countdown strong { font-size: clamp(30px, 7vw, 44px); }
-    body.mobile-app[data-route="player"] #ride-cadence-prescription strong { font-size: clamp(26px, 6vw, 36px); }
-    body.mobile-app[data-route="player"] .ride-summary {
-        margin: 0;
-        padding: 8px 0;
-    }
-    body.mobile-app[data-route="player"] .ride-zone-stat strong { font-size: 12px; }
-    body.mobile-app[data-route="player"] .ride-zone-stat strong::before { display: none; }
-    body.mobile-app[data-route="player"] .ride-workout-profile {
+    /* Ride-first order: live numbers on top, the profile fills the remaining height. */
+    body.mobile-app[data-route="player"] .ride-metrics { order: 1; }
+    body.mobile-app[data-route="player"] .ride-summary { order: 2; }
+    body.mobile-app[data-route="player"] .ride-profile-wrap {
+        order: 3;
         flex: 1;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        padding: 10px 10px 12px;
+        align-content: center;
     }
+    body.mobile-app[data-route="player"] .ride-live-value strong { font-size: clamp(46px, 13vw, 68px); }
+    body.mobile-app[data-route="player"] .ride-metric.countdown strong { font-size: clamp(28px, 8vw, 44px); }
+    body.mobile-app[data-route="player"] #ride-cadence-prescription strong { font-size: clamp(26px, 7vw, 36px); }
+    body.mobile-app[data-route="player"] .ride-zone-stat strong { font-size: 13px; }
     body.mobile-app[data-route="player"] .ride-actions {
         position: fixed;
-        right: 12px;
+        right: 14px;
         bottom: calc(10px + env(safe-area-inset-bottom));
-        left: 12px;
+        left: 14px;
         z-index: 20;
         margin: 0;
-        background: rgba(7, 24, 39, .92);
-        backdrop-filter: blur(14px);
+        padding: 0;
+        background: none;
     }
     body.mobile-app[data-route="player"] #platform .ride-actions button {
         min-height: 54px;
@@ -2272,10 +2132,6 @@ body.platform-app[data-route="player"] #ride-unsaved h3 { color: #ffc0a6; }
     body.mobile-app[data-route="player"] .platform-header::after { display: none; }
     body.mobile-app[data-route="player"] .mobile-brand-mark {
         background-image: url("../images/logo/too-many-watts-mark.png");
-    }
-    .mobile-app[data-route="player"] .ride-actions {
-        background: rgba(7, 24, 39, .92);
-        backdrop-filter: blur(12px);
     }
 }
 

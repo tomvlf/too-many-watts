@@ -62,8 +62,9 @@ export function ridePosition(timeline, {intervalIndex = 0, lapTime, workoutStatu
 }
 
 /**
- * Render duration-scaled power bars, axis labels and placeholders for the moving marker/current
- * interval. The platform updates those placeholders during the ride.
+ * Render duration-scaled power bars and placeholders for the moving marker/current interval. The
+ * platform updates those placeholders during the ride; the viewBox stays 1000×180 so updates can
+ * position in profile units while CSS scales the rendered plot down.
  */
 export function rideProfile(timeline) {
     if(!timeline) return html`<p class="muted">No timed power profile for this ride. Ride at your own pace.</p>`;
@@ -76,16 +77,15 @@ export function rideProfile(timeline) {
             fill="${zone?.color || '#526276'}"${zone ? html` data-zone="${zone.name}"` : ''}>
             <title>${time(step.start)} / ${step.power == null ? 'No power target' : `${step.power} W${zone ? ` / ${zone.name}` : ''}`}${step.cadence > 0 ? ` / ${step.cadence} rpm` : ''}</title></rect>`;
     }));
-    return html`<div class="ride-profile-axis" aria-hidden="true"><span>${maximumPower} W</span><span>${maximumPower / 2} W</span><span>0 W</span></div>
-        <div class="ride-profile-plot">
-            <svg viewBox="0 0 1000 180" preserveAspectRatio="none" aria-hidden="true">
-                <line class="ride-profile-grid" x1="0" x2="1000" y1="90" y2="90"/>
-                ${bars}
-                <rect id="ride-profile-active" class="ride-profile-active" x="0" y="0" width="0" height="180"/>
-                <rect id="ride-profile-completed" class="ride-profile-completed" x="0" y="0" width="0" height="180"/>
-            </svg>
-            <div id="ride-profile-cursor" class="ride-profile-cursor" style="left:0%"><span>Now</span></div>
-            <div class="ride-profile-times" aria-hidden="true">${[0, .25, .5, .75, 1]
-                .map(share => html`<span>${time(duration * share)}</span>`)}</div>
-        </div>`;
+    return html`<div class="ride-profile-plot">
+        <svg viewBox="0 0 1000 180" preserveAspectRatio="none" aria-hidden="true">
+            <line class="ride-profile-grid" x1="0" x2="1000" y1="90" y2="90"/>
+            ${bars}
+            <rect id="ride-profile-active" class="ride-profile-active" x="0" y="0" width="0" height="180"/>
+            <rect id="ride-profile-completed" class="ride-profile-completed" x="0" y="0" width="0" height="180"/>
+        </svg>
+        <div id="ride-profile-cursor" class="ride-profile-cursor" style="left:0%"><span>Now</span></div>
+        <div class="ride-profile-times" aria-hidden="true">${[0, .25, .5, .75, 1]
+            .map(share => html`<span>${time(duration * share)}</span>`)}</div>
+    </div>`;
 }

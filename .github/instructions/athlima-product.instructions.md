@@ -24,7 +24,7 @@ description: Athlima product, domain, accessibility, and brand standards
 - The desktop/mobile boundary is 700 px.
 - Ride controls and metrics must remain usable while resizing or navigating.
 - Use visible focus, keyboard-operable controls, and status announcements.
-- Preserve existing brand, cyberpunk ride theme, and mobile ride-first layout.
+- Preserve existing brand, the light ride cockpit, and mobile ride-first layout.
 - Brand guidelines override generic color guidance.
 
 ## Data and Privacy

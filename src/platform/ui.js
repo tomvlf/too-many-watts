@@ -691,9 +691,9 @@ export async function launchPlatform(root) {
                 card('Training metrics', html`<p>Configure your Coach profile to calculate training-load and power metrics from your history. No inferred fitness score is shown without sufficient data.</p>`)}`;
     }
     /**
-     * Build the full-screen ride cockpit: its own top bar, the live power hero, the interval
-     * countdown and cadence, the summary strip, the profile and a floating control deck. The
-     * engine keeps running when the rider leaves this page; updateRide fills the placeholders.
+     * Build the full-screen ride cockpit: a slim top bar, the workout power profile across the
+     * width, one unboxed row of live numbers and a secondary readout. The engine keeps running
+     * when the rider leaves this page; updateRide fills the placeholders.
      */
     function player() {
         timeline = rideTimeline(db.workout, db.ftp, targetPower);
@@ -713,29 +713,26 @@ export async function launchPlatform(root) {
             </header>
             <div class="ride-body">
                 ${db.workout?.trainNow ? html`<details class="ride-train-now"><summary>Why this workout?</summary><p>${db.workout.trainNow.reasoning}</p></details>` : ''}
+                <section class="ride-profile-wrap" aria-label="Workout target power profile">
+                    <div id="ride-profile" class="ride-profile" role="img" aria-label="Workout target power profile">${rideProfile(timeline)}</div>
+                    <progress id="ride-progress" max="1" value="0" aria-label="Workout progress" ${timeline ? '' : 'hidden'}></progress>
+                    <div class="interval-context"><span id="ride-position-label"></span><strong id="ride-next"></strong></div>
+                </section>
                 <div class="ride-metrics">
                     <div class="ride-metric primary"><span class="ride-metric-label">Live power</span>
                         <div class="ride-live-value"><strong id="ride-power">--</strong><small>W</small></div>
-                        <div class="ride-target-row"><span>Target</span><b id="ride-target">--</b><small>W</small></div>
-                        <span id="ride-power-state" class="ride-power-state">Waiting for power</span></div>
+                        <div class="ride-target-row"><span>Target</span><b id="ride-target">--</b><small>W</small>
+                            <span id="ride-power-state" class="ride-power-state" role="status">Waiting for power</span></div></div>
                     <div class="ride-metric countdown"><span class="ride-metric-label">Interval left</span>
                         <strong id="ride-countdown">--</strong><span id="ride-interval"></span></div>
                     <div class="ride-metric"><span id="ride-cadence-label" class="ride-metric-label">Cadence</span><div id="ride-cadence-prescription" hidden><strong id="ride-cadence-target"></strong><small id="ride-cadence-unit">rpm</small></div>
                         <span class="ride-reading">Actual <b id="ride-cadence">--</b> rpm</span></div>
+                    <div class="ride-metric heart"><span class="ride-metric-label">Heart rate</span>
+                        <span class="ride-reading"><b id="ride-hr">--</b> bpm</span></div>
                 </div>
-                <div class="ride-summary"><span><small>Heart rate</small><strong id="ride-hr">--</strong><b>bpm</b></span>
-                    <span><small>Elapsed</small><strong id="ride-elapsed">--</strong></span>
+                <div class="ride-summary"><span><small>Elapsed</small><strong id="ride-elapsed">--</strong></span>
                     <span><small>Workout left</small><strong id="ride-remaining">--</strong></span>
                     <span class="ride-zone-stat"><small>Intensity</small><strong id="ride-target-zone">--</strong></span></div>
-                <section class="ride-workout-profile" aria-labelledby="ride-profile-heading">
-                    <div class="ride-profile-heading"><div><h3 id="ride-profile-heading">Workout power profile</h3>
-                        <span class="ride-profile-zone-summary">FTP-relative intensity zones</span></div><span id="ride-position-label"></span></div>
-                    <div id="ride-profile" class="ride-profile" role="img" aria-label="Workout target power profile">${rideProfile(timeline)}</div>
-                    <progress id="ride-progress" max="1" value="0" aria-label="Workout progress" ${timeline ? '' : 'hidden'}></progress>
-                    <div class="interval-context"><div class="ride-zone-legend" aria-label="Power zone legend">
-                        <span><i class="zone-one"></i>Easy</span><span><i class="zone-four"></i>Threshold</span>
-                        <span><i class="zone-five"></i>Hard</span><span><i class="zone-seven"></i>Peak</span></div><strong id="ride-next"></strong></div>
-                </section>
                 <p id="ride-instruction" class="ride-instruction" hidden></p>
                 <section id="ride-unsaved" role="alert" hidden><h3>Recording needs saving</h3>
                     <p>Keep this page open. Download your FIT file now, or retry local storage after freeing space.</p>
