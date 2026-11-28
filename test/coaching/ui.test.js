@@ -131,3 +131,39 @@ test('running setup derives threshold pace from a typed pace or a race and drops
     expect(goal).toMatchObject({id: 'running-goal', distanceKm: 10});
     expect(goal.targetPower).toBeUndefined();
 });
+
+test('coach view offers an inline FTP editor in setup and plan views that saves through the profile lock', async () => {
+    const service = await initializeCoaching(new IDBFactory());
+    const panel = new CoachingPanel();
+    document.body.append(panel);
+    try {
+        // Setup view: the editor is present and prefilled from the current device FTP.
+        const setupEditor = panel.querySelector('[data-coach-ftp]');
+        expect(setupEditor).not.toBeNull();
+        expect(setupEditor.querySelector('input[name="ftp"]')).not.toBeNull();
+        expect(setupEditor.querySelector('[data-coach="ftp"]')).not.toBeNull();
+
+        // Updating FTP through the editor dispatches the same profile event as Settings.
+        const original = db.ftp;
+        setupEditor.querySelector('input[name="ftp"]').value = '260';
+        await panel.click({target: setupEditor.querySelector('[data-coach="ftp"]')});
+        expect(db.ftp).toBe(260);
+        expect(panel.querySelector('.coach-notice').textContent).toContain('FTP updated to 260 W');
+
+        // Plan view: the editor also appears inside the adjust section with a plan-specific hint.
+        const planEditor = panel.ftpEditor({plan: true});
+        expect(planEditor).toContain('data-coach-ftp');
+        expect(planEditor).toContain('Changing FTP does not rewrite an active plan');
+
+        // Invalid input is rejected without changing the stored value.
+        db.ftp = original;
+        panel.render();
+        const editor = panel.querySelector('[data-coach-ftp]');
+        editor.querySelector('input[name="ftp"]').value = '0';
+        await panel.click({target: editor.querySelector('[data-coach="ftp"]')});
+        expect(db.ftp).toBe(original);
+        expect(panel.querySelector('[role=alert]').textContent).toContain('valid FTP');
+    } finally {
+        panel.remove();
+    }
+});

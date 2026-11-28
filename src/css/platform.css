@@ -241,8 +241,8 @@ body[data-route="devices"] #platform-content > .devices-browser-warning,
 body[data-route="devices"] #platform-content > .devices-source-heading { grid-column: 1 / -1; }
 .ride-panel { color: var(--platform-text); padding: 0; border: 0; background: transparent; }
 .ride-heading { display: flex; align-items: start; justify-content: space-between; gap: 16px; margin-bottom: 20px; }
-#ride-status { position: relative; color: var(--platform-muted); background: #fff; border: 1px solid var(--platform-border); border-radius: 20px; padding: 4px 12px 4px 26px; font-size: 12px; text-transform: capitalize; }
-#ride-status::before { content: ""; position: absolute; left: 12px; top: 50%; width: 7px; height: 7px; border-radius: 50%; background: var(--platform-accent); transform: translateY(-50%); box-shadow: 0 0 0 4px color-mix(in srgb, var(--platform-accent) 14%, transparent); }
+#ride-status { position: relative; color: var(--platform-muted); font-size: 12px; text-transform: capitalize; }
+#ride-status::before { content: ""; display: inline-block; width: 7px; height: 7px; margin-right: 7px; border-radius: 50%; background: var(--platform-accent); box-shadow: 0 0 0 4px color-mix(in srgb, var(--platform-accent) 14%, transparent); }
 .ride-metrics { display: grid; grid-template-columns: 1.15fr repeat(3, minmax(0, 1fr)); border-top: 1px solid var(--platform-border); border-bottom: 1px solid var(--platform-border); }
 .ride-metric { display: grid; align-content: center; justify-items: center; gap: 6px; min-width: 0; padding: 22px 14px; border: 0; background: transparent; text-align: center; }
 .ride-metric + .ride-metric { border-left: 1px solid var(--platform-border); }
@@ -422,6 +422,12 @@ coaching-panel [hidden] { display: none !important; }
 .coach-upcoming li:first-child { border-top: 0; }
 .coach-upcoming li > span:first-child { color: var(--platform-muted); font-size: 13px; }
 .coach-actions { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; }
+.coach-ftp { margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--platform-border); }
+.coach-ftp label { margin: 0 0 6px; }
+.coach-ftp--row { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+.coach-ftp--row input { flex: 0 1 160px; margin: 0; }
+.coach-ftp--row button { flex: none; }
+.coach-ftp p { margin: 8px 0 0; }
 #microcycle-day-rules, [data-microcycle-day-rules] { display: grid; gap: 12px; }
 .microcycle-disruption-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; border: 1px solid var(--platform-border); padding: 12px; min-width: 0; }
 .microcycle-disruption-row label { min-width: 0; }
@@ -749,6 +755,8 @@ html:has(> body.mobile-app) { scroll-padding-bottom: calc(66px + env(safe-area-i
 .mobile-app #legacy-slot .coach-upcoming li { grid-template-columns: minmax(72px, 0.8fr) minmax(0, 1.8fr); }
 .mobile-app #legacy-slot .coach-actions { grid-template-columns: minmax(0, 1fr); }
 .mobile-app #legacy-slot .coach-actions button { width: 100%; margin-left: 0 !important; }
+.mobile-app #legacy-slot .coach-ftp--row input { flex: 1 1 100%; }
+.mobile-app #legacy-slot .coach-ftp--row button { width: 100%; }
 /* Mobile calendar: a compact 7-day grid that fits the screen; tapping a day lists its sessions below. */
 .mobile-app #legacy-slot .training-calendar { padding: 0; }
 .mobile-app #legacy-slot .training-calendar--header { gap: 8px; margin-bottom: 8px; }

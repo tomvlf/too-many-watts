@@ -1548,7 +1548,7 @@ body.platform-app[data-route="player"] .ride-topbar--devices[aria-expanded="true
 body.platform-app[data-route="player"] .ride-topbar--title {
     display: grid;
     flex: 1;
-    gap: 2px;
+    gap: 1px;
     min-width: 0;
 }
 body.platform-app[data-route="player"] .ride-topbar--name {
@@ -1563,8 +1563,7 @@ body.platform-app[data-route="player"] .ride-topbar--name {
 }
 body.platform-app[data-route="player"] .ride-topbar #ride-status {
     justify-self: start;
-    padding: 2px 10px 2px 20px;
-    font-size: 11px;
+    font-size: 12px;
 }
 body.platform-app[data-route="player"] .ride-devices {
     margin-top: 16px;
@@ -1590,8 +1589,8 @@ body.platform-app[data-route="player"] .ride-panel .plan-chip {
     color: var(--tmw-blue);
 }
 body.platform-app[data-route="player"] #ride-status {
-    border: 1px solid var(--ride-border);
-    background: var(--ride-surface);
+    border: 0;
+    background: transparent;
     color: var(--ride-muted);
 }
 body.platform-app[data-route="player"] #ride-status::before {

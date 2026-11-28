@@ -11,6 +11,7 @@
 
 import { xf } from '../functions.js';
 import { db } from '../db.js';
+import intervals from '../models/intervals.js';
 import { coachingService, coachingData } from '../coaching/service.js';
 import { GOALS, RUN_GOALS, DEFAULTS, localDay, addDays, sportOf, sportForGoalType } from '../coaching/domain.js';
 import { parsePace, thresholdPaceFromRace, formatPace } from '../coaching/running.js';
@@ -82,6 +83,7 @@ class CoachingPanel extends HTMLElement {
         xf.sub('coaching:changed', () => this.render(), options);
         xf.sub('db:ftp', () => this.render(), options);
         xf.sub('db:weight', () => this.render(), options);
+        xf.sub('services', () => this.render(), options);
         xf.sub('coaching:error', message => { this.error = message; this.render(); }, options);
         this.render();
     }
@@ -210,6 +212,7 @@ class CoachingPanel extends HTMLElement {
                         : '<button type="button" class="secondary" data-coach="confirm-archive">Archive plan and start over</button>'}
                         <p class="muted">Needed after changing ${running ? 'threshold pace' : 'FTP'}, availability or your goal. History is kept.</p></div>
                 </div>
+                ${running ? '' : this.ftpEditor({cycling: true, plan: true})}
             </section>
             <details class="coach-card">
                 <summary>Why this plan? <span class="muted">Revision ${plan.revision}</span></summary>
@@ -287,6 +290,27 @@ class CoachingPanel extends HTMLElement {
             <button type="button" class="secondary" data-coach="export">Download coaching history</button>
         </details>`;
     }
+    // Inline FTP editor so the rider can set/update FTP without leaving the Coach view.
+    // It saves through the same profile lock as Settings, so provider-managed values stay read-only.
+    ftpEditor({plan = false} = {}) {
+        let locked = false;
+        try { locked = intervals.status().connected; }
+        catch { locked = true; }
+        const value = db.ftp || '';
+        return `<div class="coach-ftp" data-coach-ftp>
+            <label for="coach-ftp-value">FTP (watts)</label>
+            <div class="coach-ftp--row">
+                <input id="coach-ftp-value" name="ftp" type="number" min="1" max="1500" step="5"
+                    value="${escape(value)}" placeholder="e.g. 250" ${locked ? 'disabled' : ''}>
+                <button type="button" data-coach="ftp" ${locked ? 'disabled' : ''}>${value ? 'Update FTP' : 'Set FTP'}</button>
+            </div>
+            <p class="muted">${locked
+                ? 'FTP is managed by Intervals.icu. Change it there, or disconnect to edit locally.'
+                : plan
+                    ? 'Changing FTP does not rewrite an active plan. Archive and regenerate it before riding its sessions.'
+                    : 'Every workout target is a percentage of this number. The plan uses it when you create it.'}</p>
+        </div>`;
+    }
     // Build a four-step form, prefilled from any earlier profile/goal and current settings.
     // Sport-specific fields are present but hidden when they do not match the chosen goal.
     setupForm(data) {
@@ -350,7 +374,7 @@ class CoachingPanel extends HTMLElement {
                             ${db.ftp ? '' : '<span class="muted">- sessions will use effort (RPE) guidance instead of watts</span>'}</li>
                         <li class="${ready ? 'ok' : 'warn'}">Body weight: <strong>${ready ? `${escape(db.weight)} kg` : 'not set (required)'}</strong></li>
                     </ul>
-                    <p class="muted">Not right? Update them in <a href="#/settings">Settings</a> first; the plan uses these values.</p>
+                    ${this.ftpEditor({cycling: true})}
                     <div class="coach-fields" data-sport="running" ${sport === 'running' ? '' : 'hidden'}>
                         <label>Threshold pace (min:sec per ${unit === 'imperial' ? 'mile' : 'km'})<input name="thresholdPace"
                             value="${escape(pace)}" placeholder="e.g. 5:00" inputmode="numeric">
@@ -560,6 +584,19 @@ class CoachingPanel extends HTMLElement {
         if(['confirm-archive', 'cancel-archive'].includes(action)) {
             this.confirmArchive = action === 'confirm-archive';
             this.render();
+            return;
+        }
+        if(action === 'ftp') {
+            const input = button.closest('[data-coach-ftp]')?.querySelector('input[name="ftp"]');
+            const ftp = Number(input?.value);
+            if(!Number.isFinite(ftp) || ftp <= 0) {
+                this.error = 'Enter a valid FTP in watts.';
+                this.render({keepInput: true});
+                return;
+            }
+            xf.dispatch('ui:ftp-set', ftp);
+            this.notice = `FTP updated to ${ftp} W.`;
+            this.changed();
             return;
         }
         try {
