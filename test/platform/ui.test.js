@@ -264,7 +264,8 @@ test('desktop shell wires every screen to real data, workout commands, accessibl
     expect(root.querySelector('.ride-exit').getAttribute('href')).toBe('#/dashboard');
     expect(root.querySelector('#ride-power').textContent).toBe('180');
     expect(root.querySelector('#ride-target').textContent).toBe('200');
-    expect(root.querySelector('#ride-target-zone').textContent).toBe('Z3 Tempo');
+    expect(root.querySelector('#ride-target-zone')).toBeNull();
+    expect(root.querySelector('#ride-elapsed')).toBeNull();
     expect(root.querySelector('#ride-power-state').textContent).toBe('20 W low');
     expect(root.querySelector('#ride-cadence-target').textContent).toBe('88');
     expect(root.querySelector('#ride-cadence-prescription').hidden).toBe(false);

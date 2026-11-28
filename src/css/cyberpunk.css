@@ -1655,10 +1655,10 @@ body.platform-app[data-route="player"] .ride-reading b {
     color: var(--ride-text);
     font-size: 24px;
 }
-/* Secondary readout row: elapsed, remaining and the current zone. */
+/* Secondary readout row: time left in the workout. */
 body.platform-app[data-route="player"] .ride-summary {
     margin: 0;
-    padding: 0;
+    padding: 10px 0;
     border: 0;
     border-bottom: 1px solid var(--ride-border);
     background: transparent;
@@ -1674,14 +1674,6 @@ body.platform-app[data-route="player"] .ride-summary small {
 body.platform-app[data-route="player"] .ride-summary strong {
     color: var(--ride-text);
     font-size: 15px;
-}
-body.platform-app[data-route="player"] .ride-summary b { color: var(--ride-muted); }
-body.platform-app[data-route="player"] .ride-zone-stat strong {
-    color: var(--tmw-blue);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    max-width: 100%;
 }
 /* A running ride stays visible from every other page and returns to the cockpit. */
 body.platform-app:not([data-route="player"]) #platform .ride-banner {
@@ -1741,22 +1733,24 @@ body.platform-app[data-route="player"] .ride-instruction {
     background: color-mix(in srgb, var(--tmw-blue) 7%, #fff);
     color: var(--ride-text);
 }
-/* Controls: quiet sticky actions; finish is the one primary exit. */
+/* Controls: compact right-aligned actions; finish is the one primary exit. */
 body.platform-app[data-route="player"] .ride-actions {
     position: sticky;
     bottom: 0;
     z-index: 5;
-    gap: 10px;
-    margin-top: 24px;
-    padding: 12px 0 calc(12px + env(safe-area-inset-bottom));
+    gap: 8px;
+    margin-top: 18px;
+    padding: 10px 0 calc(10px + env(safe-area-inset-bottom));
     border: 0;
     background: linear-gradient(180deg, transparent, var(--tmw-paper) 28%);
     box-shadow: none;
     backdrop-filter: none;
 }
 body.platform-app[data-route="player"] .ride-actions button {
-    min-height: 52px;
-    border-radius: 12px;
+    min-height: 38px;
+    padding: 7px 14px;
+    border-radius: 10px;
+    font-size: 13px;
 }
 body.platform-app[data-route="player"] #platform .ride-actions [data-action="ride-finish"] {
     border-color: var(--tmw-navy);
@@ -1865,9 +1859,11 @@ body.platform-app[data-route="player"] #ride-unsaved h3 { color: #b43a12; }
         margin: 0;
         padding: 0;
         background: none;
+        justify-content: flex-end;
     }
     body.mobile-app[data-route="player"] #platform .ride-actions button {
-        min-height: 54px;
+        min-height: 46px;
+        padding: 8px 16px;
         font-size: 13px;
     }
 }

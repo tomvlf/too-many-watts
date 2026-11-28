@@ -264,9 +264,8 @@ body[data-route="devices"] #platform-content > .devices-source-heading { grid-co
 .ride-reading { display: flex; align-items: baseline; justify-content: center; gap: 4px; color: var(--platform-muted); font-size: 12px; }
 .ride-reading b { color: var(--platform-text); font-size: 20px; font-variant-numeric: tabular-nums; }
 .ride-metric.heart .ride-reading b, #ride-cadence-prescription strong { color: var(--platform-text); font-size: clamp(30px, 3.2vw, 44px); font-variant-numeric: tabular-nums; letter-spacing: -.04em; }
-.ride-summary { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); margin: 0; border-bottom: 1px solid var(--platform-border); color: var(--platform-muted); }
-.ride-summary > span { display: grid; justify-items: center; align-content: center; gap: 2px; padding: 12px 10px; }
-.ride-summary > span + span { border-left: 1px solid var(--platform-border); }
+.ride-summary { display: flex; align-items: baseline; justify-content: center; gap: 8px; margin: 0; padding: 10px 0; border-bottom: 1px solid var(--platform-border); color: var(--platform-muted); }
+.ride-summary > span { display: flex; align-items: baseline; gap: 8px; }
 .ride-summary small { font-size: 10px; letter-spacing: .08em; text-transform: uppercase; }
 .ride-summary strong { color: var(--platform-text); font-size: 15px; font-variant-numeric: tabular-nums; }
 .ride-summary b { font-size: 11px; font-weight: 500; }
@@ -287,8 +286,8 @@ body[data-route="devices"] #platform-content > .devices-source-heading { grid-co
 #ride-progress { width: 100%; height: 6px; border-radius: 999px; accent-color: var(--platform-accent); display: block; }
 #ride-progress[hidden] { display: none; }
 .ride-instruction { margin-top: 14px; padding: 12px 16px; border: 1px solid color-mix(in srgb, var(--platform-accent) 35%, var(--platform-border)); border-radius: 10px; background: color-mix(in srgb, var(--platform-accent) 7%, #fff); }
-.ride-actions { display: flex; gap: 12px; margin-top: 22px; }
-.ride-actions button { flex: 1; }
+.ride-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 18px; }
+.ride-actions button { flex: none; min-height: 38px; padding: 7px 14px; font-size: 13px; }
 #ride-unsaved { margin-top: 14px; padding: 14px 16px; border: 1px solid rgba(255, 102, 58, .5); border-radius: 12px; background: #fff3ee; }
 #ride-unsaved[hidden] { display: none; }
 #ride-unsaved h3 { color: #b43a12; }
@@ -617,10 +616,10 @@ html:has(> body.mobile-app) { scroll-padding-bottom: calc(66px + env(safe-area-i
 .mobile-app .ride-metric.heart .ride-reading b, .mobile-app #ride-cadence-prescription strong { font-size: clamp(26px, 7vw, 36px); }
 .mobile-app .ride-actions { gap: 8px; }
 .mobile-app[data-route="player"] .ride-actions { position: sticky; bottom: calc(var(--tab-bar-height) + 6px); z-index: 10; padding: 8px 0; background: transparent; }
-.mobile-app #platform .ride-actions button { font-size: 12px; min-height: 54px; padding: 8px; }
+.mobile-app #platform .ride-actions button { font-size: 12px; min-height: 46px; padding: 8px 14px; }
 .mobile-app .ride-adjust { gap: 12px; font-size: 12px; }
 .mobile-app .interval-context { padding-top: 8px; }
-.mobile-app .ride-summary { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.mobile-app .ride-summary { justify-content: center; }
 .mobile-app .ride-profile-wrap { flex: 1; display: flex; flex-direction: column; justify-content: center; }
 .mobile-app #platform .session-row .button { flex: none; white-space: nowrap; font-size: 14px; }
 .mobile-app #main-content { padding: 14px 12px calc(var(--tab-bar-height) + 24px); }
@@ -717,8 +716,8 @@ html:has(> body.mobile-app) { scroll-padding-bottom: calc(66px + env(safe-area-i
 .mobile-app #platform .ride-heading h2 { margin: 0; font-size: 16px; }
 .mobile-app .ride-metric { padding: 10px 4px; }
 .mobile-app .ride-metric strong { font-size: clamp(26px, 7vw, 44px); }
-.mobile-app .ride-summary { margin: 0; padding: 0; gap: 0; }
-.mobile-app .ride-summary > span { padding: 8px 2px; }
+.mobile-app .ride-summary { margin: 0; padding: 8px 0; }
+.mobile-app .ride-summary > span { padding: 0; }
 .mobile-app .ride-summary strong { font-size: 13px; }
 .mobile-app .ride-summary b { font-size: 9px; }
 .mobile-app .ride-profile { margin: 0; }

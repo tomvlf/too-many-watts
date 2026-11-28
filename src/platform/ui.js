@@ -730,9 +730,7 @@ export async function launchPlatform(root) {
                     <div class="ride-metric heart"><span class="ride-metric-label">Heart rate</span>
                         <span class="ride-reading"><b id="ride-hr">--</b> bpm</span></div>
                 </div>
-                <div class="ride-summary"><span><small>Elapsed</small><strong id="ride-elapsed">--</strong></span>
-                    <span><small>Workout left</small><strong id="ride-remaining">--</strong></span>
-                    <span class="ride-zone-stat"><small>Intensity</small><strong id="ride-target-zone">--</strong></span></div>
+                <div class="ride-summary"><span><small>Workout left</small><strong id="ride-remaining">--</strong></span></div>
                 <p id="ride-instruction" class="ride-instruction" hidden></p>
                 <section id="ride-unsaved" role="alert" hidden><h3>Recording needs saving</h3>
                     <p>Keep this page open. Download your FIT file now, or retry local storage after freeing space.</p>
@@ -751,8 +749,8 @@ export async function launchPlatform(root) {
                 <p class="ride-library-link">${link('library', 'Choose a workout')}</p>
             </div>
             <div class="ride-actions" role="group" aria-label="Ride controls">
-                <button class="secondary" data-action="ride-skip">Skip interval</button>
-                <button class="secondary" data-action="ride-finish">Finish &amp; save</button></div>
+                <button class="secondary" data-action="ride-skip">Skip</button>
+                <button data-action="ride-finish">Finish</button></div>
         </section>`;
     }
     /**
@@ -1110,11 +1108,10 @@ export async function launchPlatform(root) {
             'cadence-label': cadenceTarget == null ? 'Cadence' : 'Cadence target',
             'cadence-target': cadenceTarget == null ? '' : number(cadenceTarget),
             'cadence-unit': cadenceTarget == null ? '' : 'rpm',
-            hr: connected('heartRate') && db.heartRate > 0 ? number(db.heartRate) : '--', elapsed: time(db.elapsed),
+            hr: connected('heartRate') && db.heartRate > 0 ? number(db.heartRate) : '--',
             interval: intervals.length ? `Interval ${Math.min(intervals.length, db.intervalIndex + 1)} / ${intervals.length}` : 'Free ride',
             next: !finished && nextStep ? `Next: ${time(next.duration)} / ${nextStep.power == null ? 'No power target' : `${number(targetPower(nextStep.power, db.ftp))} W`}${nextStep.cadence > 0 ? ` / ${number(nextStep.cadence)} rpm` : ''}` : 'No next interval',
             remaining: duration ? time(remaining) : '--',
-            'target-zone': targetZone?.name.replace(' · ', ' ') || '--',
             'position-label': duration ? `${time(position)} / ${time(duration)}` : 'Free ride',
             status: db.workoutStatus === 'done' ? 'Workout complete - finish to save'
                 : db.watchStatus === 'started' ? 'Riding'
